@@ -1,0 +1,30 @@
+{
+  "replace": false,
+  "colors": {
+    "redstone_torch": "#ff3333",
+
+    "lava": "#ff9933",
+    "lava_cauldron": "#ff9933",
+    "magma_block": "#ff9933",
+
+    "fire": "#ffe580",
+    "jack_o_lantern": "#ffe580",
+    "campfire": "#ffe580",
+
+    "sea_lantern": "#33ccff",
+    "sculk_sensor": "#33ccff",
+    "soul_campfire": "#33ccff",
+    "soul_lantern": "#33ccff",
+    "soul_torch": "#33ccff",
+    "soul_wall_torch": "#33ccff",
+    "soul_fire": "#33ccff",
+
+    "glow_lichen": "#88ff88",
+
+    "amethyst_cluster": "#b440ff",
+    "large_amethyst_bud": "#b440ff",
+    "medium_amethyst_bud": "#b440ff",
+    "small_amethyst_bud": "#b440ff",
+    "nether_portal": "#b440ff"
+  }
+}
