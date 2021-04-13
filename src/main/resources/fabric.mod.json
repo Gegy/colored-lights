@@ -3,7 +3,7 @@
   "id": "colored_lights",
   "version": "${version}",
   "name": "Colored Lights",
-  "description": "",
+  "description": "A compromise solution to colored lighting in Minecraft by tinting based on area.",
   "authors": ["Gegy"],
   "license": "LGPLv3",
   "environment": "client",

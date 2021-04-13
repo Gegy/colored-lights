@@ -79,13 +79,6 @@ public final class ColoredLightPoint {
         return ColoredLightPacking.pack(this.red / weight, this.green / weight, this.blue / weight);
     }
 
-    public void reset() {
-        this.red = 0.0F;
-        this.green = 0.0F;
-        this.blue = 0.0F;
-        this.weight = 0.0F;
-    }
-
     public void scale(float scale) {
         this.red *= scale;
         this.green *= scale;

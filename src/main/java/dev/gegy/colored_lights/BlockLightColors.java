@@ -31,7 +31,7 @@ public final class BlockLightColors {
 
     private static final JsonParser JSON_PARSER = new JsonParser();
 
-    private static BlockLightColors instance;
+    private static BlockLightColors instance = new BlockLightColors();
 
     private final Map<Block, Vec3f> blockToColor = new Reference2ObjectOpenHashMap<>();
 
@@ -108,6 +108,7 @@ public final class BlockLightColors {
     }
 
     public static Vec3f forBlock(BlockState state) {
-        return instance.blockToColor.getOrDefault(state.getBlock(), WHITE);
+        Vec3f color = instance.blockToColor.get(state.getBlock());
+        return color != null ? color : WHITE;
     }
 }

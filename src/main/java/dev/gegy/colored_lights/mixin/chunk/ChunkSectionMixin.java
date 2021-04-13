@@ -53,10 +53,10 @@ public abstract class ChunkSectionMixin implements ColoredLightChunkSection {
 
         ColoredLightPoint[] points = this.coloredLightPoints;
         if (points == null) {
-            this.coloredLightPoints = points = ChunkColoredLightSampler.sample((ChunkSection) (Object) this);
+            this.coloredLightPoints = points = ChunkColoredLightSampler.sampleCorners((ChunkSection) (Object) this);
         }
 
-        return points[ChunkColoredLightSampler.index(x, y, z)];
+        return points[ChunkColoredLightSampler.octantIndex(x, y, z)];
     }
 
     @Override

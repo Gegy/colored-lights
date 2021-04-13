@@ -5,16 +5,22 @@ import net.minecraft.util.math.MathHelper;
 public final class ColoredLightPacking {
     public static final int DEFAULT = 0;
 
+    private static final float HIGH_SATURATION = 0.9F;
+    private static final float MEDIUM_SATURATION = HIGH_SATURATION / 2.0F;
+
+    private static final float THRESHOLD_MEDIUM = MEDIUM_SATURATION / 2.0F;
+    private static final float THRESHOLD_HIGH = (HIGH_SATURATION + MEDIUM_SATURATION) / 2.0F;
+
     public static int pack(float hue, float saturation) {
-        if (saturation <= 0.25F) {
+        if (saturation <= THRESHOLD_MEDIUM) {
             return DEFAULT;
         }
 
         // odd = medium saturation; even = high saturation
-        if (saturation <= 0.75F) {
-            return MathHelper.floor(hue * 14.0F) * 2 + 2;
-        } else {
+        if (saturation > THRESHOLD_HIGH) {
             return MathHelper.floor(hue * 15.0F) * 2 + 1;
+        } else {
+            return MathHelper.floor(hue * 14.0F) * 2 + 2;
         }
     }
 

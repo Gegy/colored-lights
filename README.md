@@ -4,16 +4,19 @@ Normally, computing colored lighting would require excessive memory requirements
 This mod takes a compromising approach that calculates light colors instead for each chunk corner, and smoothly blends between them within the chunk.
 Although this solution is not perfect and does have noticeable issues, it achieves the general effect with minimal performance impact.
 
+This mod works entirely client-side on the 21w14a snapshot for 1.17 and requires both Fabric Loader and API.
+
 You can see some examples of the mod in action here:
+
 ![Example of lighting](https://i.imgur.com/mekeDny.png)
 
 ![Example of lighting](https://i.imgur.com/UG3IiH6.jpeg)
 
 
-## Configuring
-The colors used by different blocks can be configured with a resource pack by adding a `assets/colored_lights/light_colors.json` file.
+## Configuration
+The colors emitted by blocks can be configured with a resource pack.
 
-The configuration behaves similarly to tags and is structured like:
+To modify light colors, add `assets/colored_lights/light_colors.json`:
 ```json
 {
   "replace": false,
@@ -24,4 +27,7 @@ The configuration behaves similarly to tags and is structured like:
 }
 ```
 
-The configuration must provide a mapping between blocks that emit light and the corresponding hex color value that they should emit. Note that colors aren't represented exactly due to the color space being compressed down! 
+The configuration must provide a mapping between blocks that emit light and the corresponding hex color value that they should emit.
+Note that colors aren't represented exactly due to the color space being compressed down.
+
+If `replace` is specified as true, the default values will be cleared.
