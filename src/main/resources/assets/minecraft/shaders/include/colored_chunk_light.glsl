@@ -25,10 +25,10 @@ vec3 unpack_chunk_light_color(int color) {
     return mix(vec3(1.0), clamp(p - K.xxx, 0.0, 1.0), saturation);
 }
 
-vec3 compute_chunk_light_color(ivec2 colored_light, ivec2 light, vec3 position) {
+vec3 compute_chunk_light_color(ivec2 colored_light, ivec2 light, vec3 position, sampler2D lightMap) {
     int high = colored_light.x;
     int low = colored_light.y;
-    if ((high == 0 && low == 0) || light.x <= 0) {
+    if ((high == 0 && low == 0) || light.x <= 0 || light.y >= 256) {
         return vec3(1.0);
     }
 
@@ -54,10 +54,13 @@ vec3 compute_chunk_light_color(ivec2 colored_light, ivec2 light, vec3 position) 
         position.x
     );
 
-    return mix(vec3(1.0), color, light.x / 256.0);
+    float max_sky_light = texelFetch(lightMap, ivec2(0, 15), 0).r;
+    float sky_factor = 1.0 - (light.y / 256.0) * max_sky_light;
+    float block_factor = light.x / 256.0;
+    return mix(vec3(1.0), color, sky_factor * block_factor);
 }
 
-vec4 apply_color_to_light(vec4 normal_light, ivec2 colored_light, ivec2 light, vec3 position) {
-    vec3 light_color = compute_chunk_light_color(colored_light, light, position);
+vec4 apply_color_to_light(vec4 normal_light, ivec2 colored_light, ivec2 light, vec3 position, sampler2D lightMap) {
+    vec3 light_color = compute_chunk_light_color(colored_light, light, position, lightMap);
     return vec4(light_color, 1.0) * normal_light;
 }

@@ -24,7 +24,7 @@ public final class ColoredLights implements ModInitializer {
                     .declare("#moj_import <colored_chunk_light.glsl>")
                     .wrapCall(
                             "minecraft_sample_lightmap", "apply_color_to_light",
-                            "ChunkLightColors", "UV2", "Position / 16.0"
+                            "ChunkLightColors", "UV2", "Position / 16.0", "Sampler2"
                     )
                     .end()
                 .build();
