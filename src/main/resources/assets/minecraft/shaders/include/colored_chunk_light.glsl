@@ -14,10 +14,10 @@ vec3 unpack_chunk_light_color(int color) {
     float saturation;
     if ((color & 1) == 0) {
         hue = float(color / 2) / 15.0;
-        saturation = 0.9;
+        saturation = 0.8;
     } else {
         hue = float((color - 1) / 2) / 14.0;
-        saturation = 0.45;
+        saturation = 0.4;
     }
 
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);

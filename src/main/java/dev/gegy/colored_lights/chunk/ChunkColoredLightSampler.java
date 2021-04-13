@@ -11,26 +11,26 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 public final class ChunkColoredLightSampler {
-    private static final int OCTANT_SIZE = 2;
+    private static final int OCTANT_COUNT = 2;
 
     private static final ColoredLightPoint[] EMPTY = Util.make(
-            new ColoredLightPoint[OCTANT_SIZE * OCTANT_SIZE * OCTANT_SIZE],
+            new ColoredLightPoint[OCTANT_COUNT * OCTANT_COUNT * OCTANT_COUNT],
             points -> Arrays.fill(points, ColoredLightPoint.NO)
     );
 
-    private static final int SAMPLE_STEP = 3;
-    private static final int SAMPLE_SIZE = (16 + SAMPLE_STEP - 1) / SAMPLE_STEP;
+    private static final int SAMPLE_SIZE = 3;
+    private static final int SAMPLE_COUNT = (16 + SAMPLE_SIZE - 1) / SAMPLE_SIZE;
 
     private static int index(int x, int y, int z, int size) {
         return (y * size + z) * size + x;
     }
 
     private static int sampleIndex(int x, int y, int z) {
-        return index(x, y, z, SAMPLE_SIZE);
+        return index(x, y, z, SAMPLE_COUNT);
     }
 
     public static int octantIndex(int x, int y, int z) {
-        return index(x, y, z, OCTANT_SIZE);
+        return index(x, y, z, OCTANT_COUNT);
     }
 
     public static ColoredLightPoint[] sampleCorners(ChunkSection section) {
@@ -43,19 +43,19 @@ public final class ChunkColoredLightSampler {
             return EMPTY;
         }
 
-        ColoredLightPoint[] result = new ColoredLightPoint[OCTANT_SIZE * OCTANT_SIZE * OCTANT_SIZE];
+        ColoredLightPoint[] result = new ColoredLightPoint[OCTANT_COUNT * OCTANT_COUNT * OCTANT_COUNT];
         for (int i = 0; i < result.length; i++) {
             result[i] = new ColoredLightPoint();
         }
 
-        for (int sampleY = 0; sampleY < SAMPLE_SIZE; sampleY++) {
-            int octantY = (sampleY * SAMPLE_STEP) >> 3;
+        for (int sampleY = 0; sampleY < SAMPLE_COUNT; sampleY++) {
+            int octantY = (sampleY * SAMPLE_SIZE) >> 3;
 
-            for (int sampleZ = 0; sampleZ < SAMPLE_SIZE; sampleZ++) {
-                int octantZ = (sampleZ * SAMPLE_STEP) >> 3;
+            for (int sampleZ = 0; sampleZ < SAMPLE_COUNT; sampleZ++) {
+                int octantZ = (sampleZ * SAMPLE_SIZE) >> 3;
 
-                for (int sampleX = 0; sampleX < SAMPLE_SIZE; sampleX++) {
-                    int octantX = (sampleX * SAMPLE_STEP) >> 3;
+                for (int sampleX = 0; sampleX < SAMPLE_COUNT; sampleX++) {
+                    int octantX = (sampleX * SAMPLE_SIZE) >> 3;
 
                     ColoredLightPoint block = samples[sampleIndex(sampleX, sampleY, sampleZ)];
                     if (block == null) {
@@ -87,7 +87,7 @@ public final class ChunkColoredLightSampler {
                     int luminance = state.getLuminance();
                     if (luminance != 0) {
                         if (samples == null) {
-                            samples = new ColoredLightPoint[SAMPLE_SIZE * SAMPLE_SIZE * SAMPLE_SIZE];
+                            samples = new ColoredLightPoint[SAMPLE_COUNT * SAMPLE_COUNT * SAMPLE_COUNT];
                         }
 
                         Vec3f color = BlockLightColors.forBlock(state);
@@ -104,29 +104,29 @@ public final class ChunkColoredLightSampler {
             ColoredLightPoint[] samples, int lightBlockX, int lightBlockY, int lightBlockZ,
             int luminance, float red, float green, float blue
     ) {
-        int lightX = lightBlockX / SAMPLE_STEP;
-        int lightY = lightBlockY / SAMPLE_STEP;
-        int lightZ = lightBlockZ / SAMPLE_STEP;
+        int lightX = lightBlockX / SAMPLE_SIZE;
+        int lightY = lightBlockY / SAMPLE_SIZE;
+        int lightZ = lightBlockZ / SAMPLE_SIZE;
 
         int blockRadius = luminance - 1;
-        int radius = (blockRadius + SAMPLE_STEP - 1) / SAMPLE_STEP;
+        int radius = (blockRadius + SAMPLE_SIZE - 1) / SAMPLE_SIZE;
 
         int minY = Math.max(lightY - radius, 0);
-        int maxY = Math.min(lightY + radius, SAMPLE_SIZE - 1);
+        int maxY = Math.min(lightY + radius, SAMPLE_COUNT - 1);
 
         for (int y = minY; y <= maxY; y++) {
             int distanceY = Math.abs(y - lightY);
 
             int radiusZ = radius - distanceY;
             int minZ = Math.max(lightZ - radiusZ, 0);
-            int maxZ = Math.min(lightZ + radiusZ, SAMPLE_SIZE - 1);
+            int maxZ = Math.min(lightZ + radiusZ, SAMPLE_COUNT - 1);
 
             for (int z = minZ; z <= maxZ; z++) {
                 int distanceYZ = Math.abs(z - lightZ) + distanceY;
 
                 int radiusX = radius - distanceYZ;
                 int minX = Math.max(lightX - radiusX, 0);
-                int maxX = Math.min(lightX + radiusX, SAMPLE_SIZE - 1);
+                int maxX = Math.min(lightX + radiusX, SAMPLE_COUNT - 1);
 
                 for (int x = minX; x <= maxX; x++) {
                     int distance = Math.abs(x - lightX) + distanceYZ;
@@ -137,7 +137,7 @@ public final class ChunkColoredLightSampler {
                         samples[idx] = sample = new ColoredLightPoint();
                     }
 
-                    int blockDistance = (distance - 1) * SAMPLE_STEP + 1;
+                    int blockDistance = (distance - 1) * SAMPLE_SIZE + 1;
                     sample.add(red, green, blue, luminance - blockDistance);
                 }
             }

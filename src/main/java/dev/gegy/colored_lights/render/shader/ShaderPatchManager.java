@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public final class ShaderPatchManager {
     public static final ShaderPatchManager INSTANCE = new ShaderPatchManager();
