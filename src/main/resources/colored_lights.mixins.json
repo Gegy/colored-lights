@@ -9,9 +9,9 @@
     "chunk.ChunkSectionMixin",
     "render.ProgramMixin",
     "render.ShaderMixin",
+    "render.WorldRendererMixin",
     "render.chunk.BuiltChunkMixin",
     "render.chunk.BuiltChunkStorageAccess",
-    "render.WorldRendererMixin",
     "render.entity.ModelPartMixin"
   ],
   "injectors": {

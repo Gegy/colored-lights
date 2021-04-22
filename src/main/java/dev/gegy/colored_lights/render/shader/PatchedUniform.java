@@ -10,12 +10,12 @@ import java.util.function.Consumer;
 public final class PatchedUniform {
     final String name;
     final Type type;
-    final Consumer<GlUniform> set;
+    final Consumer<GlUniform> reset;
 
-    PatchedUniform(String name, Type type, Consumer<GlUniform> set) {
+    PatchedUniform(String name, Type type, Consumer<GlUniform> reset) {
         this.name = name;
         this.type = type;
-        this.set = set;
+        this.reset = reset;
     }
 
     public static PatchedUniform ofInt(String name, int value) {
@@ -40,7 +40,7 @@ public final class PatchedUniform {
 
     public GlUniform toGlUniform(GlShader shader) {
         GlUniform uniform = new GlUniform(this.name, this.type.glType, this.type.count, shader);
-        this.set.accept(uniform);
+        this.reset.accept(uniform);
         return uniform;
     }
 

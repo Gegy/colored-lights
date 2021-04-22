@@ -10,13 +10,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Arrays;
-
 @Mixin(ChunkBuilder.BuiltChunk.class)
 public class BuiltChunkMixin implements ColoredLightBuiltChunk {
     private int chunkLightGeneration = -1;
     private ColoredLightPoint[] chunkLightColors;
-    private final int[] packedChunkLightColors = new int[2];
+    private long packedChunkLightColors = 0;
 
     @Inject(method = "clear", at = @At("HEAD"))
     private void clear(CallbackInfo ci) {
@@ -29,22 +27,22 @@ public class BuiltChunkMixin implements ColoredLightBuiltChunk {
         this.chunkLightColors = corners;
 
         if (corners != null) {
-            int[] colors = this.packedChunkLightColors;
-
-            colors[0] = ColoredLightPacking.packHigh(
+            int high = ColoredLightPacking.packHigh(
                     corners[0].asPacked(),
                     corners[1].asPacked(),
                     corners[2].asPacked(),
                     corners[3].asPacked()
             );
-            colors[1] = ColoredLightPacking.packLow(
+            int low = ColoredLightPacking.packLow(
                     corners[4].asPacked(),
                     corners[5].asPacked(),
                     corners[6].asPacked(),
                     corners[7].asPacked()
             );
+
+            this.packedChunkLightColors = (long) high << 32 | low;
         } else {
-            Arrays.fill(this.packedChunkLightColors, ColoredLightPacking.DEFAULT);
+            this.packedChunkLightColors = ColoredLightPacking.DEFAULT;
         }
     }
 
@@ -55,7 +53,7 @@ public class BuiltChunkMixin implements ColoredLightBuiltChunk {
     }
 
     @Override
-    public int[] getPackedChunkLightColors() {
+    public long getPackedChunkLightColors() {
         return this.packedChunkLightColors;
     }
 

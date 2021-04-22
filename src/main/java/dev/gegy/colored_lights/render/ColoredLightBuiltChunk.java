@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 public interface ColoredLightBuiltChunk {
     void updateChunkLight(int generation, @Nullable ColoredLightPoint[] corners);
 
-    int[] getPackedChunkLightColors();
+    long getPackedChunkLightColors();
 
     @Nullable
     ColoredLightPoint[] getChunkLightColors();

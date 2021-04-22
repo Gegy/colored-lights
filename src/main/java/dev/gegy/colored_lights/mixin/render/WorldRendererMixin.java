@@ -49,6 +49,8 @@ public class WorldRendererMixin {
     private final BlockPos.Mutable entityBlockPos = new BlockPos.Mutable();
     private GlUniform chunkLightColors;
 
+    private long lastChunkLightColors;
+
     @Inject(method = "scheduleChunkRender", at = @At("HEAD"))
     private void scheduleChunkRender(int x, int y, int z, boolean important, CallbackInfo ci) {
         this.chunkLightColorUpdater.rerenderChunk(this.world, this.chunks, x, y, z);
@@ -84,6 +86,7 @@ public class WorldRendererMixin {
     private void prepareRenderLayer(RenderLayer layer, MatrixStack transform, double cameraX, double cameraY, double cameraZ, Matrix4f projection, CallbackInfo ci) {
         Shader shader = RenderSystem.getShader();
         this.chunkLightColors = ColoredLights.CHUNK_LIGHT_COLORS.get(shader);
+        this.lastChunkLightColors = 0;
     }
 
     @Inject(
@@ -98,10 +101,26 @@ public class WorldRendererMixin {
             WorldRenderer.ChunkInfo chunk, ChunkBuilder.BuiltChunk builtChunk, VertexBuffer buffer, BlockPos origin
     ) {
         GlUniform chunkLightColors = this.chunkLightColors;
-        if (chunkLightColors != null) {
-            int[] colors = ((ColoredLightBuiltChunk) builtChunk).getPackedChunkLightColors();
-            chunkLightColors.method_35650(colors[0], colors[1]);
+        if (chunkLightColors == null) return;
+
+        long colors = ((ColoredLightBuiltChunk) builtChunk).getPackedChunkLightColors();
+        if (this.lastChunkLightColors != colors) {
+            this.lastChunkLightColors = colors;
+
+            int colorsHigh = (int) (colors >> 32);
+            int colorsLow = (int) colors;
+            chunkLightColors.method_35650(colorsHigh, colorsLow);
             chunkLightColors.upload();
+        }
+    }
+
+    @Inject(method = "renderLayer", at = @At("RETURN"))
+    private void finishRenderLayer(RenderLayer layer, MatrixStack transform, double cameraX, double cameraY, double cameraZ, Matrix4f projection, CallbackInfo ci) {
+        this.lastChunkLightColors = 0;
+
+        GlUniform chunkLightColors = this.chunkLightColors;
+        if (chunkLightColors != null) {
+            chunkLightColors.method_35650(0, 0);
         }
     }
 
