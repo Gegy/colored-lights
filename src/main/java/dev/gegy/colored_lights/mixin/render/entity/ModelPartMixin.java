@@ -22,10 +22,10 @@ public abstract class ModelPartMixin {
     private void render(ModelPart part, MatrixStack.Entry entry, VertexConsumer writer, int light, int overlay, float red, float green, float blue, float alpha) {
         ColoredLightEntityRenderContext ctx = ColoredLightEntityRenderContext.get();
         if (ctx != null) {
-            float blockLight = (light & 0xFF) / 256.0F;
-            red *= MathHelper.lerp(blockLight, 1.0F, ctx.red);
-            green *= MathHelper.lerp(blockLight, 1.0F, ctx.green);
-            blue *= MathHelper.lerp(blockLight, 1.0F, ctx.blue);
+            float factor = ctx.getLightColorFactor(light);
+            red *= MathHelper.lerp(factor, 1.0F, ctx.red);
+            green *= MathHelper.lerp(factor, 1.0F, ctx.green);
+            blue *= MathHelper.lerp(factor, 1.0F, ctx.blue);
         }
 
         this.renderCuboids(entry, writer, light, overlay, red, green, blue, alpha);

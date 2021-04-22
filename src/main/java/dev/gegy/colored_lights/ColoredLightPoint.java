@@ -21,14 +21,11 @@ public final class ColoredLightPoint {
         this(0.0F, 0.0F, 0.0F, 0.0F);
     }
 
-    public static void mix(ColoredLightPoint[] corners, double x, double y, double z, ColorConsumer consumer) {
-        float lerpX = (float) (x - (MathHelper.floor(x) & ~15)) / 16.0F;
-        float lerpY = (float) (y - (MathHelper.floor(y) & ~15)) / 16.0F;
-        float lerpZ = (float) (z - (MathHelper.floor(z) & ~15)) / 16.0F;
+    public static void mix(ColoredLightPoint[] corners, float x, float y, float z, ColorConsumer consumer) {
         consumer.accept(
-                mix(corners, lerpX, lerpY, lerpZ, ColoredLightPoint::getRed),
-                mix(corners, lerpX, lerpY, lerpZ, ColoredLightPoint::getGreen),
-                mix(corners, lerpX, lerpY, lerpZ, ColoredLightPoint::getBlue)
+                mix(corners, x, y, z, ColoredLightPoint::getRed),
+                mix(corners, x, y, z, ColoredLightPoint::getGreen),
+                mix(corners, x, y, z, ColoredLightPoint::getBlue)
         );
     }
 

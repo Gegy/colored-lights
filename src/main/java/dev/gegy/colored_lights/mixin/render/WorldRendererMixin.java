@@ -13,6 +13,8 @@ import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.BuiltChunkStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -103,6 +105,12 @@ public class WorldRendererMixin {
         }
     }
 
+    @Inject(method = "render", at = @At("INVOKE"))
+    private void beforeRender(MatrixStack transform, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmap, Matrix4f projection, CallbackInfo ci) {
+        float skyBrightness = this.world.method_23783(tickDelta);
+        ColoredLightEntityRenderContext.setGlobal(skyBrightness);
+    }
+
     @Inject(
             method = "renderEntity",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;render(Lnet/minecraft/entity/Entity;DDDFFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V"),
@@ -121,7 +129,11 @@ public class WorldRendererMixin {
 
         ColoredLightPoint[] corners = ((ColoredLightBuiltChunk) chunk).getChunkLightColors();
         if (corners != null) {
-            ColoredLightPoint.mix(corners, entityX, entityY, entityZ, ColoredLightEntityRenderContext::set);
+            BlockPos origin = chunk.getOrigin();
+            float localX = (float) (entityX - origin.getX());
+            float localY = (float) (entityY - origin.getY());
+            float localZ = (float) (entityZ - origin.getZ());
+            ColoredLightPoint.mix(corners, localX / 16.0F, localY / 16.0F, localZ / 16.0F, ColoredLightEntityRenderContext::set);
         }
     }
 
