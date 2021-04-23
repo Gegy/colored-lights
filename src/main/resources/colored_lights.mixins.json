@@ -12,6 +12,8 @@
     "render.WorldRendererMixin",
     "render.chunk.BuiltChunkMixin",
     "render.chunk.BuiltChunkStorageAccess",
+    "render.entity.BlockModelRendererMixin",
+    "render.entity.ItemRendererMixin",
     "render.entity.ModelPartMixin"
   ],
   "injectors": {

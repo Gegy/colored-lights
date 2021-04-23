@@ -86,7 +86,7 @@ public interface ShaderSourcePatcher {
                     return source;
                 }
 
-                int functionEndIdx = this.findParenthesisExit(source, functionStartIdx, 0);
+                int functionEndIdx = this.findParenthesisExit(source, functionStartIdx);
                 if (functionEndIdx != -1) {
                     int wrapperLength = this.wrapperFunction.length() + 2;
 
@@ -129,8 +129,8 @@ public interface ShaderSourcePatcher {
             return -1;
         }
 
-        private int findParenthesisExit(String source, int fromIdx, int startLevel) {
-            int level = startLevel;
+        private int findParenthesisExit(String source, int fromIdx) {
+            int level = 0;
             for (int idx = fromIdx; idx < source.length(); idx++) {
                 char c = source.charAt(idx);
                 if (c == '(') {

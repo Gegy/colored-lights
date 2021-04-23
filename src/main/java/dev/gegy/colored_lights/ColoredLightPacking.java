@@ -1,9 +1,13 @@
 package dev.gegy.colored_lights;
 
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 public final class ColoredLightPacking {
     public static final int DEFAULT = 0;
+
+    public static final int BITS = 8;
+    public static final int VALUE_COUNT = 1 << BITS;
 
     private static final float HIGH_SATURATION = 0.8F;
     private static final float MEDIUM_SATURATION = HIGH_SATURATION / 2.0F;
@@ -43,11 +47,55 @@ public final class ColoredLightPacking {
         return pack(hue, saturation);
     }
 
-    public static int packHigh(int x0y0z0, int x0y0z1, int x0y1z0, int x0y1z1) {
-        return (x0y0z0 << 24) | (x0y0z1 << 16) | (x0y1z0 << 8) | x0y1z1;
+    public static Vec3f unpack(int packed) {
+        // we use a value of 0 to represent saturation=0, given hue is irrelevant here.
+        if (packed == 0) {
+            return BlockLightColors.WHITE;
+        }
+
+        int color = packed - 1;
+
+        // we interleave high and medium saturation colors, giving us 15 values for high saturation and 14 for medium.
+        // this is acceptable because the difference between colors of lower saturation is harder to distinguish.
+
+        float hue;
+        float saturation;
+        if ((color & 1) == 0) {
+            hue = (float) (color / 2) / 15.0F;
+            saturation = 0.8F;
+        } else {
+            hue = (float) ((color - 1) / 2) / 14.0F;
+            saturation = 0.4F;
+        }
+
+        float px = Math.abs(MathHelper.fractionalPart(hue + 1.0F) * 6.0F - 3.0F);
+        float py = Math.abs(MathHelper.fractionalPart(hue + 2.0F / 3.0F) * 6.0F - 3.0F);
+        float pz = Math.abs(MathHelper.fractionalPart(hue + 1.0F / 3.0F) * 6.0F - 3.0F);
+
+        return new Vec3f(
+                MathHelper.lerp(saturation, 1.0F, MathHelper.clamp(px - 1.0F, 0.0F, 1.0F)),
+                MathHelper.lerp(saturation, 1.0F, MathHelper.clamp(py - 1.0F, 0.0F, 1.0F)),
+                MathHelper.lerp(saturation, 1.0F, MathHelper.clamp(pz - 1.0F, 0.0F, 1.0F))
+        );
     }
 
-    public static int packLow(int x1y0z0, int x1y0z1, int x1y1z0, int x1y1z1) {
-        return (x1y0z0 << 24) | (x1y0z1 << 16) | (x1y1z0 << 8) | x1y1z1;
+    public static long pack(ColoredLightCorner[] corners) {
+        int high = ColoredLightPacking.pack4(
+                corners[0].packed,
+                corners[1].packed,
+                corners[2].packed,
+                corners[3].packed
+        );
+        int low = ColoredLightPacking.pack4(
+                corners[4].packed,
+                corners[5].packed,
+                corners[6].packed,
+                corners[7].packed
+        );
+        return (long) high << 32 | low;
+    }
+
+    private static int pack4(int a, int b, int c, int d) {
+        return (a << 24) | (b << 16) | (c << 8) | d;
     }
 }

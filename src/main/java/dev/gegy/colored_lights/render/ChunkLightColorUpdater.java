@@ -1,6 +1,7 @@
 package dev.gegy.colored_lights.render;
 
-import dev.gegy.colored_lights.ColoredLightPoint;
+import dev.gegy.colored_lights.ColoredLightCorner;
+import dev.gegy.colored_lights.ColoredLightValue;
 import dev.gegy.colored_lights.chunk.ColoredLightChunkSection;
 import dev.gegy.colored_lights.mixin.render.chunk.BuiltChunkStorageAccess;
 import net.minecraft.client.render.BuiltChunkStorage;
@@ -61,7 +62,7 @@ public final class ChunkLightColorUpdater {
     }
 
     private void updateChunk(WorldView world, ChunkBuilder.BuiltChunk builtChunk, int x, int y, int z) {
-        ColoredLightPoint[] corners = new ColoredLightPoint[] {
+        ColoredLightCorner[] corners = new ColoredLightCorner[] {
                 this.getLightColorAt(world, x, y, z),
                 this.getLightColorAt(world, x, y, z + 1),
                 this.getLightColorAt(world, x, y + 1, z),
@@ -78,17 +79,17 @@ public final class ChunkLightColorUpdater {
         ((ColoredLightBuiltChunk) builtChunk).updateChunkLight(generation, isLightingColored(corners) ? corners : null);
     }
 
-    private static boolean isLightingColored(ColoredLightPoint[] points) {
-        for (ColoredLightPoint point : points) {
-            if (!point.isDefault()) {
+    private static boolean isLightingColored(ColoredLightCorner[] corners) {
+        for (ColoredLightCorner corner : corners) {
+            if (!corner.isDefault()) {
                 return true;
             }
         }
         return false;
     }
 
-    private ColoredLightPoint getLightColorAt(WorldView world, int cx, int cy, int cz) {
-        ColoredLightPoint color = new ColoredLightPoint();
+    private ColoredLightCorner getLightColorAt(WorldView world, int cx, int cy, int cz) {
+        ColoredLightValue color = new ColoredLightValue();
 
         for (int dz = 0; dz <= 1; dz++) {
             for (int dx = 0; dx <= 1; dx++) {
@@ -102,7 +103,7 @@ public final class ChunkLightColorUpdater {
             }
         }
 
-        return color;
+        return color.asCorner();
     }
 
     @Nullable

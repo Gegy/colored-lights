@@ -1,9 +1,9 @@
 package dev.gegy.colored_lights.chunk;
 
-import dev.gegy.colored_lights.ColoredLightPoint;
+import dev.gegy.colored_lights.ColoredLightValue;
 
 public interface ColoredLightChunkSection {
-    ColoredLightPoint getColoredLightPoint(int x, int y, int z);
+    ColoredLightValue getColoredLightPoint(int x, int y, int z);
 
     int getColoredLightGeneration();
 }

@@ -1,7 +1,7 @@
 package dev.gegy.colored_lights.mixin.render.chunk;
 
+import dev.gegy.colored_lights.ColoredLightCorner;
 import dev.gegy.colored_lights.ColoredLightPacking;
-import dev.gegy.colored_lights.ColoredLightPoint;
 import dev.gegy.colored_lights.render.ColoredLightBuiltChunk;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ChunkBuilder.BuiltChunk.class)
 public class BuiltChunkMixin implements ColoredLightBuiltChunk {
     private int chunkLightGeneration = -1;
-    private ColoredLightPoint[] chunkLightColors;
+    private ColoredLightCorner[] chunkLightColors;
     private long packedChunkLightColors = 0;
 
     @Inject(method = "clear", at = @At("HEAD"))
@@ -22,25 +22,12 @@ public class BuiltChunkMixin implements ColoredLightBuiltChunk {
     }
 
     @Override
-    public void updateChunkLight(int generation, ColoredLightPoint[] corners) {
+    public void updateChunkLight(int generation, ColoredLightCorner[] corners) {
         this.chunkLightGeneration = generation;
         this.chunkLightColors = corners;
 
         if (corners != null) {
-            int high = ColoredLightPacking.packHigh(
-                    corners[0].asPacked(),
-                    corners[1].asPacked(),
-                    corners[2].asPacked(),
-                    corners[3].asPacked()
-            );
-            int low = ColoredLightPacking.packLow(
-                    corners[4].asPacked(),
-                    corners[5].asPacked(),
-                    corners[6].asPacked(),
-                    corners[7].asPacked()
-            );
-
-            this.packedChunkLightColors = (long) high << 32 | low;
+            this.packedChunkLightColors = ColoredLightPacking.pack(corners);
         } else {
             this.packedChunkLightColors = ColoredLightPacking.DEFAULT;
         }
@@ -48,7 +35,7 @@ public class BuiltChunkMixin implements ColoredLightBuiltChunk {
 
     @Nullable
     @Override
-    public ColoredLightPoint[] getChunkLightColors() {
+    public ColoredLightCorner[] getChunkLightColors() {
         return this.chunkLightColors;
     }
 

@@ -1,6 +1,6 @@
 package dev.gegy.colored_lights.mixin.chunk;
 
-import dev.gegy.colored_lights.ColoredLightPoint;
+import dev.gegy.colored_lights.ColoredLightValue;
 import dev.gegy.colored_lights.chunk.ChunkColoredLightSampler;
 import dev.gegy.colored_lights.chunk.ColoredLightChunkSection;
 import net.minecraft.block.BlockState;
@@ -18,7 +18,7 @@ public abstract class ChunkSectionMixin implements ColoredLightChunkSection {
     @Shadow
     public abstract boolean isEmpty();
 
-    private ColoredLightPoint[] coloredLightPoints;
+    private ColoredLightValue[] coloredLightPoints;
     private int coloredLightGeneration;
 
     @Inject(
@@ -46,12 +46,12 @@ public abstract class ChunkSectionMixin implements ColoredLightChunkSection {
     }
 
     @Override
-    public ColoredLightPoint getColoredLightPoint(int x, int y, int z) {
+    public ColoredLightValue getColoredLightPoint(int x, int y, int z) {
         if (this.isEmpty()) {
-            return ColoredLightPoint.NO;
+            return ColoredLightValue.NO;
         }
 
-        ColoredLightPoint[] points = this.coloredLightPoints;
+        ColoredLightValue[] points = this.coloredLightPoints;
         if (points == null) {
             this.coloredLightPoints = points = ChunkColoredLightSampler.sampleCorners((ChunkSection) (Object) this);
         }

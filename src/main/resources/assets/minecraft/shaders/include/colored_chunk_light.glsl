@@ -32,6 +32,8 @@ vec3 compute_chunk_light_color(ivec2 colored_light, ivec2 light, vec3 position, 
         return vec3(1.0);
     }
 
+    position /= 16.0;
+
     vec3 x0y0z0 = unpack_chunk_light_color((high >> 24) & 31);
     vec3 x0y0z1 = unpack_chunk_light_color((high >> 16) & 31);
     vec3 x0y1z0 = unpack_chunk_light_color((high >> 8) & 31);

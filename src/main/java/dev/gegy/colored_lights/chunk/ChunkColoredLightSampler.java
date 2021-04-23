@@ -1,7 +1,7 @@
 package dev.gegy.colored_lights.chunk;
 
 import dev.gegy.colored_lights.BlockLightColors;
-import dev.gegy.colored_lights.ColoredLightPoint;
+import dev.gegy.colored_lights.ColoredLightValue;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3f;
@@ -13,9 +13,9 @@ import java.util.Arrays;
 public final class ChunkColoredLightSampler {
     private static final int OCTANT_COUNT = 2;
 
-    private static final ColoredLightPoint[] EMPTY = Util.make(
-            new ColoredLightPoint[OCTANT_COUNT * OCTANT_COUNT * OCTANT_COUNT],
-            points -> Arrays.fill(points, ColoredLightPoint.NO)
+    private static final ColoredLightValue[] EMPTY = Util.make(
+            new ColoredLightValue[OCTANT_COUNT * OCTANT_COUNT * OCTANT_COUNT],
+            points -> Arrays.fill(points, ColoredLightValue.NO)
     );
 
     private static final int SAMPLE_SIZE = 3;
@@ -33,19 +33,19 @@ public final class ChunkColoredLightSampler {
         return index(x, y, z, OCTANT_COUNT);
     }
 
-    public static ColoredLightPoint[] sampleCorners(ChunkSection section) {
+    public static ColoredLightValue[] sampleCorners(ChunkSection section) {
         // To properly weight lights, we would need to sample across the neighbor chunks and compute color per block
         // before summing all together. This is too expensive for our compromise solution, so instead we just sample
         // within this chunk at a lower resolution.
 
-        ColoredLightPoint[] samples = takeSamples(section);
+        ColoredLightValue[] samples = takeSamples(section);
         if (samples == null) {
             return EMPTY;
         }
 
-        ColoredLightPoint[] result = new ColoredLightPoint[OCTANT_COUNT * OCTANT_COUNT * OCTANT_COUNT];
+        ColoredLightValue[] result = new ColoredLightValue[OCTANT_COUNT * OCTANT_COUNT * OCTANT_COUNT];
         for (int i = 0; i < result.length; i++) {
-            result[i] = new ColoredLightPoint();
+            result[i] = new ColoredLightValue();
         }
 
         for (int sampleY = 0; sampleY < SAMPLE_COUNT; sampleY++) {
@@ -57,7 +57,7 @@ public final class ChunkColoredLightSampler {
                 for (int sampleX = 0; sampleX < SAMPLE_COUNT; sampleX++) {
                     int octantX = (sampleX * SAMPLE_SIZE) >> 3;
 
-                    ColoredLightPoint block = samples[sampleIndex(sampleX, sampleY, sampleZ)];
+                    ColoredLightValue block = samples[sampleIndex(sampleX, sampleY, sampleZ)];
                     if (block == null) {
                         continue;
                     }
@@ -67,7 +67,7 @@ public final class ChunkColoredLightSampler {
                         block.scale(15.0F / block.weight);
                     }
 
-                    ColoredLightPoint octant = result[octantIndex(octantX, octantY, octantZ)];
+                    ColoredLightValue octant = result[octantIndex(octantX, octantY, octantZ)];
                     octant.add(block);
                 }
             }
@@ -77,8 +77,8 @@ public final class ChunkColoredLightSampler {
     }
 
     @Nullable
-    private static ColoredLightPoint[] takeSamples(ChunkSection section) {
-        ColoredLightPoint[] samples = null;
+    private static ColoredLightValue[] takeSamples(ChunkSection section) {
+        ColoredLightValue[] samples = null;
 
         for (int y = 0; y < 16; y++) {
             for (int z = 0; z < 16; z++) {
@@ -87,7 +87,7 @@ public final class ChunkColoredLightSampler {
                     int luminance = state.getLuminance();
                     if (luminance != 0) {
                         if (samples == null) {
-                            samples = new ColoredLightPoint[SAMPLE_COUNT * SAMPLE_COUNT * SAMPLE_COUNT];
+                            samples = new ColoredLightValue[SAMPLE_COUNT * SAMPLE_COUNT * SAMPLE_COUNT];
                         }
 
                         Vec3f color = BlockLightColors.forBlock(state);
@@ -101,7 +101,7 @@ public final class ChunkColoredLightSampler {
     }
 
     private static void addLightSourceSamples(
-            ColoredLightPoint[] samples, int lightBlockX, int lightBlockY, int lightBlockZ,
+            ColoredLightValue[] samples, int lightBlockX, int lightBlockY, int lightBlockZ,
             int luminance, float red, float green, float blue
     ) {
         int lightX = lightBlockX / SAMPLE_SIZE;
@@ -132,9 +132,9 @@ public final class ChunkColoredLightSampler {
                     int distance = Math.abs(x - lightX) + distanceYZ;
 
                     int idx = sampleIndex(x, y, z);
-                    ColoredLightPoint sample = samples[idx];
+                    ColoredLightValue sample = samples[idx];
                     if (sample == null) {
-                        samples[idx] = sample = new ColoredLightPoint();
+                        samples[idx] = sample = new ColoredLightValue();
                     }
 
                     int blockDistance = (distance - 1) * SAMPLE_SIZE + 1;

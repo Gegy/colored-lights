@@ -1,7 +1,7 @@
 package dev.gegy.colored_lights.mixin.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import dev.gegy.colored_lights.ColoredLightPoint;
+import dev.gegy.colored_lights.ColoredLightCorner;
 import dev.gegy.colored_lights.ColoredLights;
 import dev.gegy.colored_lights.mixin.render.chunk.BuiltChunkStorageAccess;
 import dev.gegy.colored_lights.render.ChunkLightColorUpdater;
@@ -146,13 +146,13 @@ public class WorldRendererMixin {
             return;
         }
 
-        ColoredLightPoint[] corners = ((ColoredLightBuiltChunk) chunk).getChunkLightColors();
+        ColoredLightCorner[] corners = ((ColoredLightBuiltChunk) chunk).getChunkLightColors();
         if (corners != null) {
             BlockPos origin = chunk.getOrigin();
             float localX = (float) (entityX - origin.getX());
             float localY = (float) (entityY - origin.getY());
             float localZ = (float) (entityZ - origin.getZ());
-            ColoredLightPoint.mix(corners, localX / 16.0F, localY / 16.0F, localZ / 16.0F, ColoredLightEntityRenderContext::set);
+            ColoredLightCorner.mix(corners, localX / 16.0F, localY / 16.0F, localZ / 16.0F, ColoredLightEntityRenderContext::set);
         }
     }
 
