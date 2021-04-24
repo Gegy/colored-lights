@@ -9,23 +9,19 @@ public final class ColoredLightPacking {
     public static final int BITS = 8;
     public static final int VALUE_COUNT = 1 << BITS;
 
-    private static final float HIGH_SATURATION = 0.8F;
-    private static final float MEDIUM_SATURATION = HIGH_SATURATION / 2.0F;
+    private static final int SATURATION_LEVELS = 4;
 
-    private static final float THRESHOLD_MEDIUM = MEDIUM_SATURATION / 2.0F;
-    private static final float THRESHOLD_HIGH = (HIGH_SATURATION + MEDIUM_SATURATION) / 2.0F;
+    private static final int VALUES_PER_SATURATION_LEVEL = (VALUE_COUNT - 1) / (SATURATION_LEVELS - 1);
 
     public static int pack(float hue, float saturation) {
-        if (saturation <= THRESHOLD_MEDIUM) {
+        int saturationLevel = Math.round(saturation * SATURATION_LEVELS);
+        if (saturationLevel <= 0) {
             return DEFAULT;
         }
 
-        // odd = medium saturation; even = high saturation
-        if (saturation > THRESHOLD_HIGH) {
-            return MathHelper.floor(hue * 15.0F) * 2 + 1;
-        } else {
-            return MathHelper.floor(hue * 14.0F) * 2 + 2;
-        }
+        return MathHelper.floor(hue * VALUES_PER_SATURATION_LEVEL)
+                + (saturationLevel - 1) * VALUES_PER_SATURATION_LEVEL
+                + 1;
     }
 
     // adapted from: <http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl>
@@ -55,18 +51,10 @@ public final class ColoredLightPacking {
 
         int color = packed - 1;
 
-        // we interleave high and medium saturation colors, giving us 15 values for high saturation and 14 for medium.
-        // this is acceptable because the difference between colors of lower saturation is harder to distinguish.
+        int saturationLevel = (color / VALUES_PER_SATURATION_LEVEL) + 1;
 
-        float hue;
-        float saturation;
-        if ((color & 1) == 0) {
-            hue = (float) (color / 2) / 15.0F;
-            saturation = 0.8F;
-        } else {
-            hue = (float) ((color - 1) / 2) / 14.0F;
-            saturation = 0.4F;
-        }
+        float hue = MathHelper.fractionalPart((float) color / VALUES_PER_SATURATION_LEVEL);
+        float saturation = (float) saturationLevel / SATURATION_LEVELS;
 
         float px = Math.abs(MathHelper.fractionalPart(hue + 1.0F) * 6.0F - 3.0F);
         float py = Math.abs(MathHelper.fractionalPart(hue + 2.0F / 3.0F) * 6.0F - 3.0F);
@@ -80,22 +68,20 @@ public final class ColoredLightPacking {
     }
 
     public static long pack(ColoredLightCorner[] corners) {
-        int high = ColoredLightPacking.pack4(
+        return pack8(
                 corners[0].packed,
                 corners[1].packed,
                 corners[2].packed,
-                corners[3].packed
-        );
-        int low = ColoredLightPacking.pack4(
+                corners[3].packed,
                 corners[4].packed,
                 corners[5].packed,
                 corners[6].packed,
                 corners[7].packed
         );
-        return (long) high << 32 | low;
     }
 
-    private static int pack4(int a, int b, int c, int d) {
-        return (a << 24) | (b << 16) | (c << 8) | d;
+    private static long pack8(long a, long b, long c, long d, long e, long f, long g, long h) {
+        return (a << 56) | (b << 48) | (c << 40) | (d << 32)
+                | (e << 24) | (f << 16) | (g << 8) | h;
     }
 }

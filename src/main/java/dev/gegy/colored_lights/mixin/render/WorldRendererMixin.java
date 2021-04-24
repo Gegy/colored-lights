@@ -107,7 +107,7 @@ public class WorldRendererMixin {
         if (this.lastChunkLightColors != colors) {
             this.lastChunkLightColors = colors;
 
-            int colorsHigh = (int) (colors >> 32);
+            int colorsHigh = (int) (colors >>> 32);
             int colorsLow = (int) colors;
             chunkLightColors.method_35650(colorsHigh, colorsLow);
             chunkLightColors.upload();

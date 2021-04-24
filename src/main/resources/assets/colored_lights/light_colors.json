@@ -3,9 +3,9 @@
   "colors": {
     "redstone_torch": "#ff3333",
 
-    "lava": "#ff9933",
-    "lava_cauldron": "#ff9933",
-    "magma_block": "#ff9933",
+    "lava": "#ff7033",
+    "lava_cauldron": "#ff7033",
+    "magma_block": "#ff7033",
 
     "fire": "#ffe580",
     "jack_o_lantern": "#ffe580",

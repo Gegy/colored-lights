@@ -1,3 +1,8 @@
+const int VALUE_COUNT = 256;
+const int SATURATION_LEVELS = 4;
+
+const int VALUES_PER_SATURATION_LEVEL = (VALUE_COUNT - 1) / (SATURATION_LEVELS - 1);
+
 // adapted from <http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl>
 vec3 unpack_chunk_light_color(int color) {
     // we use a value of 0 to represent saturation=0, given hue is irrelevant here.
@@ -7,18 +12,10 @@ vec3 unpack_chunk_light_color(int color) {
 
     color = color - 1;
 
-    // we interleave high and medium saturation colors, giving us 15 values for high saturation and 14 for medium.
-    // this is acceptable because the difference between colors of lower saturation is harder to distinguish.
+    int saturationLevel = (color / VALUES_PER_SATURATION_LEVEL) + 1;
 
-    float hue;
-    float saturation;
-    if ((color & 1) == 0) {
-        hue = float(color / 2) / 15.0;
-        saturation = 0.8;
-    } else {
-        hue = float((color - 1) / 2) / 14.0;
-        saturation = 0.4;
-    }
+    float hue = fract(float(color) / float(VALUES_PER_SATURATION_LEVEL));
+    float saturation = float(saturationLevel) / float(SATURATION_LEVELS);
 
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(vec3(hue) + K.xyz) * 6.0 - K.www);
@@ -34,14 +31,14 @@ vec3 compute_chunk_light_color(ivec2 colored_light, ivec2 light, vec3 position, 
 
     position /= 16.0;
 
-    vec3 x0y0z0 = unpack_chunk_light_color((high >> 24) & 31);
-    vec3 x0y0z1 = unpack_chunk_light_color((high >> 16) & 31);
-    vec3 x0y1z0 = unpack_chunk_light_color((high >> 8) & 31);
-    vec3 x0y1z1 = unpack_chunk_light_color(high & 31);
-    vec3 x1y0z0 = unpack_chunk_light_color((low >> 24) & 31);
-    vec3 x1y0z1 = unpack_chunk_light_color((low >> 16) & 31);
-    vec3 x1y1z0 = unpack_chunk_light_color((low >> 8) & 31);
-    vec3 x1y1z1 = unpack_chunk_light_color(low & 31);
+    vec3 x0y0z0 = unpack_chunk_light_color((high >> 24) & 255);
+    vec3 x0y0z1 = unpack_chunk_light_color((high >> 16) & 255);
+    vec3 x0y1z0 = unpack_chunk_light_color((high >> 8) & 255);
+    vec3 x0y1z1 = unpack_chunk_light_color(high & 255);
+    vec3 x1y0z0 = unpack_chunk_light_color((low >> 24) & 255);
+    vec3 x1y0z1 = unpack_chunk_light_color((low >> 16) & 255);
+    vec3 x1y1z0 = unpack_chunk_light_color((low >> 8) & 255);
+    vec3 x1y1z1 = unpack_chunk_light_color(low & 255);
     vec3 color = mix(
         mix(
             mix(x0y0z0, x0y0z1, position.z),
