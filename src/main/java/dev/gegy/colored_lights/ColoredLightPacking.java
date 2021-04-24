@@ -7,21 +7,23 @@ public final class ColoredLightPacking {
     public static final int DEFAULT = 0;
 
     public static final int BITS = 8;
-    public static final int VALUE_COUNT = 1 << BITS;
+    public static final int COLOR_COUNT = 1 << BITS;
 
-    private static final int SATURATION_LEVELS = 4;
+    private static final int SATURATION_LEVELS = 6;
 
-    private static final int VALUES_PER_SATURATION_LEVEL = (VALUE_COUNT - 1) / (SATURATION_LEVELS - 1);
+    private static final int HUES_PER_SATURATION_LEVEL = (COLOR_COUNT - 1) / (SATURATION_LEVELS - 1);
 
     public static int pack(float hue, float saturation) {
-        int saturationLevel = Math.round(saturation * SATURATION_LEVELS);
+        int saturationLevel = MathHelper.floor(saturation * SATURATION_LEVELS);
+        saturationLevel = Math.min(saturationLevel, SATURATION_LEVELS - 1);
+
         if (saturationLevel <= 0) {
             return DEFAULT;
         }
 
-        return MathHelper.floor(hue * VALUES_PER_SATURATION_LEVEL)
-                + (saturationLevel - 1) * VALUES_PER_SATURATION_LEVEL
-                + 1;
+        int hueIndex = Math.round(hue * HUES_PER_SATURATION_LEVEL) % HUES_PER_SATURATION_LEVEL;
+        int saturationShift = (saturationLevel - 1) * HUES_PER_SATURATION_LEVEL;
+        return hueIndex + saturationShift + 1;
     }
 
     // adapted from: <http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl>
@@ -51,10 +53,10 @@ public final class ColoredLightPacking {
 
         int color = packed - 1;
 
-        int saturationLevel = (color / VALUES_PER_SATURATION_LEVEL) + 1;
+        int saturationLevel = (color / HUES_PER_SATURATION_LEVEL) + 1;
 
-        float hue = MathHelper.fractionalPart((float) color / VALUES_PER_SATURATION_LEVEL);
-        float saturation = (float) saturationLevel / SATURATION_LEVELS;
+        float hue = MathHelper.fractionalPart((float) color / HUES_PER_SATURATION_LEVEL);
+        float saturation = (float) saturationLevel / (SATURATION_LEVELS - 1);
 
         float px = Math.abs(MathHelper.fractionalPart(hue + 1.0F) * 6.0F - 3.0F);
         float py = Math.abs(MathHelper.fractionalPart(hue + 2.0F / 3.0F) * 6.0F - 3.0F);

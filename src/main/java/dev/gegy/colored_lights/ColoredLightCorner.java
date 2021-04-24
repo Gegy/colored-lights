@@ -4,10 +4,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 
 public final class ColoredLightCorner {
-    private static final ColoredLightCorner[] BY_PACKED = new ColoredLightCorner[ColoredLightPacking.VALUE_COUNT];
+    private static final ColoredLightCorner[] BY_PACKED = new ColoredLightCorner[ColoredLightPacking.COLOR_COUNT];
 
     static {
-        for (int packed = 0; packed < ColoredLightPacking.VALUE_COUNT; packed++) {
+        for (int packed = 0; packed < ColoredLightPacking.COLOR_COUNT; packed++) {
             Vec3f color = ColoredLightPacking.unpack(packed);
             BY_PACKED[packed] = new ColoredLightCorner(color.getX(), color.getY(), color.getZ(), packed);
         }

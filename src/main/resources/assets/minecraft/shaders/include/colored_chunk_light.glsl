@@ -1,7 +1,7 @@
-const int VALUE_COUNT = 256;
-const int SATURATION_LEVELS = 4;
+const int COLOR_COUNT = 256;
+const int SATURATION_LEVELS = 6;
 
-const int VALUES_PER_SATURATION_LEVEL = (VALUE_COUNT - 1) / (SATURATION_LEVELS - 1);
+const int HUES_PER_SATURATION_LEVEL = (COLOR_COUNT - 1) / (SATURATION_LEVELS - 1);
 
 // adapted from <http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl>
 vec3 unpack_chunk_light_color(int color) {
@@ -12,10 +12,10 @@ vec3 unpack_chunk_light_color(int color) {
 
     color = color - 1;
 
-    int saturationLevel = (color / VALUES_PER_SATURATION_LEVEL) + 1;
+    int saturationLevel = (color / HUES_PER_SATURATION_LEVEL) + 1;
 
-    float hue = fract(float(color) / float(VALUES_PER_SATURATION_LEVEL));
-    float saturation = float(saturationLevel) / float(SATURATION_LEVELS);
+    float hue = fract(float(color) / float(HUES_PER_SATURATION_LEVEL));
+    float saturation = float(saturationLevel) / float(SATURATION_LEVELS - 1);
 
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(vec3(hue) + K.xyz) * 6.0 - K.www);
