@@ -46,9 +46,10 @@ public final class BlockLightColors {
                         for (Resource resource : manager.getAllResources(new Identifier(ColoredLights.ID, "light_colors.json"))) {
                             try (InputStream input = resource.getInputStream()) {
                                 JsonObject root = JSON_PARSER.parse(new InputStreamReader(input)).getAsJsonObject();
-                                boolean replace = JsonHelper.getBoolean(root, "replace");
-                                if (replace) {
-                                    colors = new BlockLightColors();
+                                if(root.get("replace") != null) {
+                                    if (JsonHelper.getBoolean(root, "replace")) {
+                                        colors = new BlockLightColors();
+                                    }
                                 }
 
                                 JsonObject mappings = JsonHelper.getObject(root, "colors");
