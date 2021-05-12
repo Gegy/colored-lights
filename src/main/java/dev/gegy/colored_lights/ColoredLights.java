@@ -4,6 +4,8 @@ import dev.gegy.colored_lights.render.shader.PatchedUniform;
 import dev.gegy.colored_lights.render.shader.ShaderPatch;
 import dev.gegy.colored_lights.render.shader.ShaderPatchManager;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.resource.ResourceType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +17,7 @@ public final class ColoredLights implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        BlockLightColors.init();
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(BlockLightColorLoader.INSTANCE);
 
         // @formatter:off
         ShaderPatch chunkPatch = ShaderPatch.builder()
