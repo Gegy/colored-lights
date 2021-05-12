@@ -109,7 +109,7 @@ public class WorldRendererMixin {
 
             int colorsHigh = (int) (colors >>> 32);
             int colorsLow = (int) colors;
-            chunkLightColors.method_35650(colorsHigh, colorsLow);
+            chunkLightColors.set(colorsHigh, colorsLow);
             chunkLightColors.upload();
         }
     }
@@ -120,7 +120,7 @@ public class WorldRendererMixin {
 
         GlUniform chunkLightColors = this.chunkLightColors;
         if (chunkLightColors != null) {
-            chunkLightColors.method_35650(0, 0);
+            chunkLightColors.set(0, 0);
         }
     }
 

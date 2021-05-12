@@ -12,9 +12,11 @@
   },
   "mixins": ["colored_lights.mixins.json"],
   "accessWidener": "colored_lights.accesswidener",
+  "compatibilityLevel": "JAVA_16",
   "depends": {
     "fabricloader": ">=0.11",
-    "fabric": ">=0.32",
-    "minecraft": "1.17.x"
+    "fabric": ">=0.34",
+    "minecraft": "1.17.x",
+    "java": ">=16"
   }
 }

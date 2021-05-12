@@ -19,7 +19,7 @@ public final class PatchedUniform {
     }
 
     public static PatchedUniform ofInt(String name, int value) {
-        return new PatchedUniform(name, Type.INT, u -> u.method_35649(value));
+        return new PatchedUniform(name, Type.INT, u -> u.set(value));
     }
 
     public static PatchedUniform ofFloat(String name, float value) {
@@ -27,7 +27,7 @@ public final class PatchedUniform {
     }
 
     public static PatchedUniform ofInt2(String name, int a, int b) {
-        return new PatchedUniform(name, Type.INT2, u -> u.method_35650(a, b));
+        return new PatchedUniform(name, Type.INT2, u -> u.set(a, b));
     }
 
     @Nullable
