@@ -33,13 +33,8 @@ dependencies {
 processResources {
 	inputs.property "version", project.version
 
-	from(sourceSets.main.resources.srcDirs) {
-		include "fabric.mod.json"
+	filesMatching("fabric.mod.json") {
 		expand "version": project.version
-	}
-
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "fabric.mod.json"
 	}
 }
 
@@ -53,5 +48,35 @@ java {
 }
 
 jar {
-	from "LICENSE"
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
+	}
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
+			}
+		}
+	}
+
+	repositories {
+		def env = System.getenv()
+		if (env.MAVEN_URL) {
+			maven {
+				credentials {
+					username env.MAVEN_USERNAME
+					password env.MAVEN_PASSWORD
+				}
+				url env.MAVEN_URL
+			}
+		} else {
+			mavenLocal()
+		}
+	}
 }
