@@ -51,7 +51,7 @@ public abstract class ChunkSectionMixin implements ColoredLightChunkSection {
             return ColoredLightValue.NO;
         }
 
-        ColoredLightValue[] points = this.coloredLightPoints;
+        var points = this.coloredLightPoints;
         if (points == null) {
             this.coloredLightPoints = points = ChunkColoredLightSampler.sampleCorners((ChunkSection) (Object) this);
         }

@@ -26,20 +26,24 @@ public final class PatchedUniform {
         return new PatchedUniform(name, Type.FLOAT, u -> u.set(value));
     }
 
-    public static PatchedUniform ofInt2(String name, int a, int b) {
-        return new PatchedUniform(name, Type.INT2, u -> u.set(a, b));
+    public static PatchedUniform ofInt2(String name, int x, int y) {
+        return new PatchedUniform(name, Type.INT2, u -> u.set(x, y));
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     @Nullable
     public GlUniform get(Shader shader) {
-        if (shader instanceof PatchedShader) {
-            return ((PatchedShader) shader).getPatchedUniform(this);
+        if (shader instanceof PatchedShader patchedShader) {
+            return patchedShader.getPatchedUniform(this);
         }
         return null;
     }
 
     public GlUniform toGlUniform(GlShader shader) {
-        GlUniform uniform = new GlUniform(this.name, this.type.glType, this.type.count, shader);
+        var uniform = new GlUniform(this.name, this.type.glType, this.type.count, shader);
         this.reset.accept(uniform);
         return uniform;
     }

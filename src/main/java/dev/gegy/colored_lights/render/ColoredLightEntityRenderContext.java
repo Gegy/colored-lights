@@ -14,7 +14,7 @@ public final class ColoredLightEntityRenderContext {
 
     @Nullable
     public static ColoredLightEntityRenderContext get() {
-        ColoredLightEntityRenderContext context = INSTANCE;
+        var context = INSTANCE;
         return context.active ? context : null;
     }
 
@@ -31,7 +31,7 @@ public final class ColoredLightEntityRenderContext {
     }
 
     public static void set(float red, float green, float blue) {
-        ColoredLightEntityRenderContext context = INSTANCE;
+        var context = INSTANCE;
         context.red = red;
         context.green = green;
         context.blue = blue;

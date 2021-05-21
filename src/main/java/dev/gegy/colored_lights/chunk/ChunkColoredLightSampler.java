@@ -2,9 +2,7 @@ package dev.gegy.colored_lights.chunk;
 
 import dev.gegy.colored_lights.BlockLightColors;
 import dev.gegy.colored_lights.ColoredLightValue;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.chunk.ChunkSection;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,12 +36,12 @@ public final class ChunkColoredLightSampler {
         // before summing all together. This is too expensive for our compromise solution, so instead we just sample
         // within this chunk at a lower resolution.
 
-        ColoredLightValue[] samples = takeSamples(section);
+        var samples = takeSamples(section);
         if (samples == null) {
             return EMPTY;
         }
 
-        ColoredLightValue[] result = new ColoredLightValue[OCTANT_COUNT * OCTANT_COUNT * OCTANT_COUNT];
+        var result = new ColoredLightValue[OCTANT_COUNT * OCTANT_COUNT * OCTANT_COUNT];
         for (int i = 0; i < result.length; i++) {
             result[i] = new ColoredLightValue();
         }
@@ -57,7 +55,7 @@ public final class ChunkColoredLightSampler {
                 for (int sampleX = 0; sampleX < SAMPLE_COUNT; sampleX++) {
                     int octantX = (sampleX * SAMPLE_SIZE) >> 3;
 
-                    ColoredLightValue block = samples[sampleIndex(sampleX, sampleY, sampleZ)];
+                    var block = samples[sampleIndex(sampleX, sampleY, sampleZ)];
                     if (block == null) {
                         continue;
                     }
@@ -67,7 +65,7 @@ public final class ChunkColoredLightSampler {
                         block.scale(15.0F / block.weight);
                     }
 
-                    ColoredLightValue octant = result[octantIndex(octantX, octantY, octantZ)];
+                    var octant = result[octantIndex(octantX, octantY, octantZ)];
                     octant.add(block);
                 }
             }
@@ -83,14 +81,14 @@ public final class ChunkColoredLightSampler {
         for (int y = 0; y < 16; y++) {
             for (int z = 0; z < 16; z++) {
                 for (int x = 0; x < 16; x++) {
-                    BlockState state = section.getBlockState(x, y, z);
+                    var state = section.getBlockState(x, y, z);
                     int luminance = state.getLuminance();
                     if (luminance != 0) {
                         if (samples == null) {
                             samples = new ColoredLightValue[SAMPLE_COUNT * SAMPLE_COUNT * SAMPLE_COUNT];
                         }
 
-                        Vec3f color = BlockLightColors.forBlock(state);
+                        var color = BlockLightColors.forBlock(state);
                         addLightSourceSamples(samples, x, y, z, luminance, color.getX(), color.getY(), color.getZ());
                     }
                 }
@@ -132,7 +130,7 @@ public final class ChunkColoredLightSampler {
                     int distance = Math.abs(x - lightX) + distanceYZ;
 
                     int idx = sampleIndex(x, y, z);
-                    ColoredLightValue sample = samples[idx];
+                    var sample = samples[idx];
                     if (sample == null) {
                         samples[idx] = sample = new ColoredLightValue();
                     }

@@ -15,7 +15,7 @@ public final class BlockLightColors {
     private final Map<Block, Vec3f> blockToColor = new Reference2ObjectOpenHashMap<>();
 
     public static Vec3f forBlock(BlockState state) {
-        Vec3f color = instance.blockToColor.get(state.getBlock());
+        var color = instance.blockToColor.get(state.getBlock());
         return color != null ? color : WHITE;
     }
 

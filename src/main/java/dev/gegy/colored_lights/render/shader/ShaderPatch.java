@@ -28,13 +28,13 @@ public final class ShaderPatch {
     }
 
     public void addUniforms(GlShader shader, BiConsumer<PatchedUniform, GlUniform> consumer) {
-        for (PatchedUniform uniform : this.uniforms) {
+        for (var uniform : this.uniforms) {
             consumer.accept(uniform, uniform.toGlUniform(shader));
         }
     }
 
     public String applyToSource(String source, Program.Type type) {
-        ShaderSourcePatcher patcher = type == Program.Type.VERTEX ? this.vertex : this.fragment;
+        var patcher = type == Program.Type.VERTEX ? this.vertex : this.fragment;
         return patcher.apply(source);
     }
 
@@ -65,8 +65,8 @@ public final class ShaderPatch {
         }
 
         public ShaderPatch build() {
-            ShaderSourcePatcher vertex = this.vertex != null ? this.vertex.build() : ShaderSourcePatcher.NO;
-            ShaderSourcePatcher fragment = this.fragment != null ? this.fragment.build() : ShaderSourcePatcher.NO;
+            var vertex = this.vertex != null ? this.vertex.build() : ShaderSourcePatcher.NO;
+            var fragment = this.fragment != null ? this.fragment.build() : ShaderSourcePatcher.NO;
             return new ShaderPatch(this.uniforms.values(), vertex, fragment);
         }
     }

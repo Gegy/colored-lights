@@ -1,12 +1,10 @@
 package dev.gegy.colored_lights;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
 import net.minecraft.block.Block;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -15,9 +13,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
@@ -54,15 +50,15 @@ public final class BlockLightColorLoader implements SimpleResourceReloadListener
     }
 
     private static BlockLightColors loadColors(ResourceManager manager) throws IOException {
-        BlockLightColors baseColors = new BlockLightColors();
-        BlockLightColors overrideColors = new BlockLightColors();
+        var baseColors = new BlockLightColors();
+        var overrideColors = new BlockLightColors();
 
-        for (Resource resource : manager.getAllResources(new Identifier(ColoredLights.ID, "light_colors.json"))) {
-            try (InputStream input = resource.getInputStream()) {
-                JsonObject root = JSON_PARSER.parse(new InputStreamReader(input)).getAsJsonObject();
+        for (var resource : manager.getAllResources(new Identifier(ColoredLights.ID, "light_colors.json"))) {
+            try (var input = resource.getInputStream()) {
+                var root = JSON_PARSER.parse(new InputStreamReader(input)).getAsJsonObject();
 
                 boolean replace = JsonHelper.getBoolean(root, "replace", false);
-                JsonObject mappings = JsonHelper.getObject(root, "colors");
+                var mappings = JsonHelper.getObject(root, "colors");
 
                 if (replace) {
                     baseColors = new BlockLightColors();
@@ -81,14 +77,14 @@ public final class BlockLightColorLoader implements SimpleResourceReloadListener
     }
 
     private static void parseColorMappings(JsonObject mappings, BiConsumer<Block, Vec3f> consumer) throws JsonSyntaxException {
-        for (Map.Entry<String, JsonElement> entry : mappings.entrySet()) {
-            Identifier blockId = new Identifier(entry.getKey());
-            Block block = Registry.BLOCK.getOrEmpty(blockId).orElse(null);
+        for (var entry : mappings.entrySet()) {
+            var blockId = new Identifier(entry.getKey());
+            var block = Registry.BLOCK.getOrEmpty(blockId).orElse(null);
             if (block == null) {
                 continue;
             }
 
-            Vec3f color = parseColor(JsonHelper.asString(entry.getValue(), "color value"));
+            var color = parseColor(JsonHelper.asString(entry.getValue(), "color value"));
             consumer.accept(block, color);
         }
     }

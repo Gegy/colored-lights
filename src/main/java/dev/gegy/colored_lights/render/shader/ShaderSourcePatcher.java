@@ -38,9 +38,9 @@ public interface ShaderSourcePatcher {
 
         @Override
         public String apply(String source) {
-            StringBuilder result = new StringBuilder(source.length());
+            var result = new StringBuilder(source.length());
 
-            String[] lines = source.split("\n");
+            var lines = source.split("\n");
             for (String line : lines) {
                 if (this.shift == Shift.AFTER) {
                     result.append(line).append("\n");
@@ -90,11 +90,11 @@ public interface ShaderSourcePatcher {
                 if (functionEndIdx != -1) {
                     int wrapperLength = this.wrapperFunction.length() + 2;
 
-                    StringBuilder wrappedCall = new StringBuilder(this.wrapperFunction + "("
+                    var wrappedCall = new StringBuilder(this.wrapperFunction + "("
                             + source.substring(functionStartIdx, functionEndIdx + 1));
 
                     if (this.additionalArguments.length > 0) {
-                        for (String argument : this.additionalArguments) {
+                        for (var argument : this.additionalArguments) {
                             wrappedCall.append(", ").append(argument);
                             wrapperLength += 2 + argument.length();
                         }
@@ -111,7 +111,7 @@ public interface ShaderSourcePatcher {
         }
 
         private int findTargetFunctionStart(String source, int fromIdx) {
-            StringBuilder word = new StringBuilder();
+            var word = new StringBuilder();
 
             for (int idx = fromIdx; idx < source.length(); idx++) {
                 char c = source.charAt(idx);

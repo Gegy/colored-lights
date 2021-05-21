@@ -17,7 +17,7 @@ public class ItemRendererMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumer;quad(Lnet/minecraft/client/util/math/MatrixStack$Entry;Lnet/minecraft/client/render/model/BakedQuad;FFFII)V")
     )
     private void renderQuad(VertexConsumer consumer, MatrixStack.Entry transform, BakedQuad quad, float red, float green, float blue, int light, int overlay) {
-        ColoredLightEntityRenderContext ctx = ColoredLightEntityRenderContext.get();
+        var ctx = ColoredLightEntityRenderContext.get();
         if (ctx != null) {
             float factor = ctx.getLightColorFactor(light);
             red *= MathHelper.lerp(factor, 1.0F, ctx.red);

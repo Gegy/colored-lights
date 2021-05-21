@@ -20,19 +20,19 @@ public final class ColoredLights implements ModInitializer {
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(BlockLightColorLoader.INSTANCE);
 
         // @formatter:off
-        ShaderPatch chunkPatch = ShaderPatch.builder()
+        var chunkPatch = ShaderPatch.builder()
                 .vertex()
                     .addUniform(CHUNK_LIGHT_COLORS)
                     .declare("#moj_import <colored_chunk_light.glsl>")
                     .wrapCall(
                             "minecraft_sample_lightmap", "apply_color_to_light",
-                            "ChunkLightColors", "UV2", "Position", "Sampler2"
+                            CHUNK_LIGHT_COLORS.getName(), "UV2", "Position", "Sampler2"
                     )
                     .end()
                 .build();
         // @formatter:on
 
-        String[] applyChunkColorTo = new String[] {
+        var applyChunkColorTo = new String[] {
                 "rendertype_solid",
                 "rendertype_cutout",
                 "rendertype_cutout_mipped",
@@ -40,7 +40,7 @@ public final class ColoredLights implements ModInitializer {
                 "rendertype_tripwire"
         };
 
-        for (String shader : applyChunkColorTo) {
+        for (var shader : applyChunkColorTo) {
             ShaderPatchManager.INSTANCE.add(shader, chunkPatch);
         }
     }

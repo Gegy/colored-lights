@@ -33,7 +33,7 @@ public final class ShaderPatchManager {
     }
 
     public static String applySourcePatches(String source, Program.Type type) {
-        Collection<ShaderPatch> activePatches = getActivePatches();
+        var activePatches = getActivePatches();
         if (activePatches != null && !activePatches.isEmpty()) {
             for (ShaderPatch patch : activePatches) {
                 source = patch.applyToSource(source, type);
@@ -44,7 +44,7 @@ public final class ShaderPatchManager {
     }
 
     public static void applyUniformPatches(GlShader shader, BiConsumer<PatchedUniform, GlUniform> consumer) {
-        Collection<ShaderPatch> activePatches = getActivePatches();
+        var activePatches = getActivePatches();
         if (activePatches != null) {
             for (ShaderPatch patch : activePatches) {
                 patch.addUniforms(shader, consumer);

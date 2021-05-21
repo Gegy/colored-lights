@@ -20,7 +20,7 @@ public abstract class ModelPartMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ModelPart;renderCuboids(Lnet/minecraft/client/util/math/MatrixStack$Entry;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V")
     )
     private void render(ModelPart part, MatrixStack.Entry entry, VertexConsumer writer, int light, int overlay, float red, float green, float blue, float alpha) {
-        ColoredLightEntityRenderContext ctx = ColoredLightEntityRenderContext.get();
+        var ctx = ColoredLightEntityRenderContext.get();
         if (ctx != null) {
             float factor = ctx.getLightColorFactor(light);
             red *= MathHelper.lerp(factor, 1.0F, ctx.red);

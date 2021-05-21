@@ -17,7 +17,7 @@ public class ProgramMixin {
             InputStream input,
             Program.Type type, String name, InputStream stream, String domain, GLImportProcessor loader
     ) {
-        String source = TextureUtil.readResourceAsString(input);
+        var source = TextureUtil.readResourceAsString(input);
         source = ShaderPatchManager.applySourcePatches(source, type);
         return source;
     }

@@ -17,7 +17,7 @@ public class BlockModelRendererMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/VertexConsumer;quad(Lnet/minecraft/client/util/math/MatrixStack$Entry;Lnet/minecraft/client/render/model/BakedQuad;[FFFF[IIZ)V")
     )
     private void renderQuad(VertexConsumer consumer, MatrixStack.Entry transform, BakedQuad quad, float[] brightnesses, float red, float green, float blue, int[] lights, int overlay, boolean useQuadColorData) {
-        ColoredLightEntityRenderContext ctx = ColoredLightEntityRenderContext.get();
+        var ctx = ColoredLightEntityRenderContext.get();
         if (ctx != null) {
             // we're very lazy and don't respect smooth lighting
             float factor = ctx.getLightColorFactor(lights[0]);

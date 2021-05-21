@@ -84,7 +84,7 @@ public class WorldRendererMixin {
 
     @Inject(method = "renderLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderLayer;startDrawing()V", shift = At.Shift.AFTER))
     private void prepareRenderLayer(RenderLayer layer, MatrixStack transform, double cameraX, double cameraY, double cameraZ, Matrix4f projection, CallbackInfo ci) {
-        Shader shader = RenderSystem.getShader();
+        var shader = RenderSystem.getShader();
         this.chunkLightColors = ColoredLights.CHUNK_LIGHT_COLORS.get(shader);
         this.lastChunkLightColors = 0;
     }
@@ -100,7 +100,7 @@ public class WorldRendererMixin {
             VertexFormat vertexFormat, Shader shader, GlUniform chunkOffset, boolean renderedChunk,
             WorldRenderer.ChunkInfo chunk, ChunkBuilder.BuiltChunk builtChunk, VertexBuffer buffer, BlockPos origin
     ) {
-        GlUniform chunkLightColors = this.chunkLightColors;
+        var chunkLightColors = this.chunkLightColors;
         if (chunkLightColors == null) return;
 
         long colors = ((ColoredLightBuiltChunk) builtChunk).getPackedChunkLightColors();
@@ -118,7 +118,7 @@ public class WorldRendererMixin {
     private void finishRenderLayer(RenderLayer layer, MatrixStack transform, double cameraX, double cameraY, double cameraZ, Matrix4f projection, CallbackInfo ci) {
         this.lastChunkLightColors = 0;
 
-        GlUniform chunkLightColors = this.chunkLightColors;
+        var chunkLightColors = this.chunkLightColors;
         if (chunkLightColors != null) {
             chunkLightColors.set(0, 0);
         }
@@ -140,13 +140,13 @@ public class WorldRendererMixin {
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, CallbackInfo ci,
             double entityX, double entityY, double entityZ, float entityYaw
     ) {
-        BlockPos.Mutable entityBlockPos = this.entityBlockPos.set(entityX, entityY, entityZ);
-        ChunkBuilder.BuiltChunk chunk = ((BuiltChunkStorageAccess) this.chunks).getBuiltChunk(entityBlockPos);
+        var entityBlockPos = this.entityBlockPos.set(entityX, entityY, entityZ);
+        var chunk = ((BuiltChunkStorageAccess) this.chunks).getBuiltChunk(entityBlockPos);
         if (chunk == null) {
             return;
         }
 
-        ColoredLightCorner[] corners = ((ColoredLightBuiltChunk) chunk).getChunkLightColors();
+        var corners = ((ColoredLightBuiltChunk) chunk).getChunkLightColors();
         if (corners != null) {
             BlockPos origin = chunk.getOrigin();
             float localX = (float) (entityX - origin.getX());
