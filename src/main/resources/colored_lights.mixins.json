@@ -2,9 +2,8 @@
   "required": true,
   "minVersion": "0.8",
   "package": "dev.gegy.colored_lights.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "mixins": [
-  ],
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [],
   "client": [
     "chunk.ChunkSectionMixin",
     "render.ProgramMixin",
@@ -12,9 +11,11 @@
     "render.WorldRendererMixin",
     "render.chunk.BuiltChunkMixin",
     "render.chunk.BuiltChunkStorageAccess",
+    "render.entity.BlockEntityRenderDispatcherMixin",
     "render.entity.BlockModelRendererMixin",
     "render.entity.ItemRendererMixin",
-    "render.entity.ModelPartMixin"
+    "render.entity.ModelPartMixin",
+    "render.particle.ParticleManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

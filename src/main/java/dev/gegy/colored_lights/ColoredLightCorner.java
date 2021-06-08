@@ -1,5 +1,6 @@
 package dev.gegy.colored_lights;
 
+import dev.gegy.colored_lights.render.ColorConsumer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 
@@ -64,10 +65,6 @@ public final class ColoredLightCorner {
 
     public boolean isDefault() {
         return this.packed == ColoredLightPacking.DEFAULT;
-    }
-
-    public interface ColorConsumer {
-        void accept(float red, float green, float blue);
     }
 
     private interface GetComponent {

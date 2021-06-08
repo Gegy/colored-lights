@@ -5,8 +5,10 @@ import dev.gegy.colored_lights.ColoredLightCorner;
 import dev.gegy.colored_lights.ColoredLights;
 import dev.gegy.colored_lights.mixin.render.chunk.BuiltChunkStorageAccess;
 import dev.gegy.colored_lights.render.ChunkLightColorUpdater;
+import dev.gegy.colored_lights.render.ColorConsumer;
 import dev.gegy.colored_lights.render.ColoredLightBuiltChunk;
 import dev.gegy.colored_lights.render.ColoredLightEntityRenderContext;
+import dev.gegy.colored_lights.render.ColoredLightReader;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.VertexBuffer;
@@ -38,7 +40,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 @Mixin(WorldRenderer.class)
-public class WorldRendererMixin {
+public class WorldRendererMixin implements ColoredLightReader {
     @Shadow
     private ClientWorld world;
     @Shadow
@@ -46,7 +48,7 @@ public class WorldRendererMixin {
 
     private final ChunkLightColorUpdater chunkLightColorUpdater = new ChunkLightColorUpdater();
 
-    private final BlockPos.Mutable entityBlockPos = new BlockPos.Mutable();
+    private final BlockPos.Mutable readBlockPos = new BlockPos.Mutable();
     private GlUniform chunkLightColors;
 
     private long lastChunkLightColors;
@@ -140,20 +142,7 @@ public class WorldRendererMixin {
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, CallbackInfo ci,
             double entityX, double entityY, double entityZ, float entityYaw
     ) {
-        var entityBlockPos = this.entityBlockPos.set(entityX, entityY, entityZ);
-        var chunk = ((BuiltChunkStorageAccess) this.chunks).getBuiltChunk(entityBlockPos);
-        if (chunk == null) {
-            return;
-        }
-
-        var corners = ((ColoredLightBuiltChunk) chunk).getChunkLightColors();
-        if (corners != null) {
-            BlockPos origin = chunk.getOrigin();
-            float localX = (float) (entityX - origin.getX());
-            float localY = (float) (entityY - origin.getY());
-            float localZ = (float) (entityZ - origin.getZ());
-            ColoredLightCorner.mix(corners, localX / 16.0F, localY / 16.0F, localZ / 16.0F, ColoredLightEntityRenderContext::set);
-        }
+        this.read(entityX, entityY, entityZ, ColoredLightEntityRenderContext::set);
     }
 
     @Inject(method = "renderEntity", at = @At("RETURN"))
@@ -162,5 +151,23 @@ public class WorldRendererMixin {
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, CallbackInfo ci
     ) {
         ColoredLightEntityRenderContext.end();
+    }
+
+    @Override
+    public void read(double x, double y, double z, ColorConsumer consumer) {
+        var readBlockPos = this.readBlockPos.set(x, y, z);
+        var chunk = ((BuiltChunkStorageAccess) this.chunks).getBuiltChunk(readBlockPos);
+        if (chunk == null) {
+            return;
+        }
+
+        var corners = ((ColoredLightBuiltChunk) chunk).getChunkLightColors();
+        if (corners != null) {
+            BlockPos origin = chunk.getOrigin();
+            float localX = (float) (x - origin.getX()) / 16.0F;
+            float localY = (float) (y - origin.getY()) / 16.0F;
+            float localZ = (float) (z - origin.getZ()) / 16.0F;
+            ColoredLightCorner.mix(corners, localX, localY, localZ, consumer);
+        }
     }
 }
