@@ -13,10 +13,11 @@ You can see some examples of the mod in action here:
 ![Example of lighting](https://i.imgur.com/UG3IiH6.jpeg)
 
 
-## Configuration
-The colors emitted by blocks can be configured with a resource pack.
+## Configuration & Mod Integration
+The colors emitted by blocks can be configured with a resource pack! This means any mod can easily add colored light
+compatibility by just adding a data file.
 
-To modify light colors, add `assets/colored_lights/light_colors.json`:
+To modify or add light colors, create `assets/colored_lights/light_colors.json`:
 ```json
 {
   "replace": false,
@@ -31,3 +32,4 @@ The configuration must provide a mapping between blocks that emit light and the 
 Note that colors aren't represented exactly due to the color space being compressed down.
 
 If `replace` is specified as true, the default values will be cleared.
+For any pack just adding to existing color mappings or just replacing specific entries, replace should be false.
