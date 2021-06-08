@@ -14,7 +14,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.Box;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -55,7 +54,7 @@ public class ParticleManagerMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/Particle;buildGeometry(Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V")
     )
     private void renderParticle(Particle particle, VertexConsumer consumer, Camera camera, float tickDelta) {
-        Box box = particle.getBoundingBox();
+        var box = particle.getBoundingBox();
         ColoredLightReader.INSTANCE.read(box.minX, box.minY, box.minZ, this.coloredLightSetter);
 
         particle.buildGeometry(this.coloredParticleVertexConsumer, camera, tickDelta);

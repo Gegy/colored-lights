@@ -4,7 +4,7 @@ Normally, computing colored lighting would require excessive memory requirements
 This mod takes a compromising approach that calculates light colors instead for each chunk corner, and smoothly blends between them within the chunk.
 Although this solution is not perfect and does have noticeable issues, it achieves the general effect with minimal performance impact.
 
-This mod works entirely client-side on the 21w19a snapshot for 1.17 and requires both Fabric Loader and API.
+This mod works entirely client-side for 1.17 and requires both Fabric Loader and API.
 
 You can see some examples of the mod in action here:
 
