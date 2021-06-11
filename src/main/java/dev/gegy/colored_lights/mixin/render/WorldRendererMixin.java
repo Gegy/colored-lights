@@ -9,12 +9,12 @@ import dev.gegy.colored_lights.render.ColorConsumer;
 import dev.gegy.colored_lights.render.ColoredLightBuiltChunk;
 import dev.gegy.colored_lights.render.ColoredLightEntityRenderContext;
 import dev.gegy.colored_lights.render.ColoredLightReader;
+import dev.gegy.colored_lights.render.ColoredLightWorldRenderer;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.BuiltChunkStorage;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
@@ -28,7 +28,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,11 +35,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.util.Iterator;
-import java.util.Set;
-
 @Mixin(WorldRenderer.class)
-public class WorldRendererMixin implements ColoredLightReader {
+public class WorldRendererMixin implements ColoredLightWorldRenderer, ColoredLightReader {
     @Shadow
     private ClientWorld world;
     @Shadow
@@ -56,32 +52,6 @@ public class WorldRendererMixin implements ColoredLightReader {
     @Inject(method = "scheduleChunkRender", at = @At("HEAD"))
     private void scheduleChunkRender(int x, int y, int z, boolean important, CallbackInfo ci) {
         this.chunkLightColorUpdater.rerenderChunk(this.world, this.chunks, x, y, z);
-    }
-
-    @Inject(
-            method = "setupTerrain",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk;cancelRebuild()V"),
-            locals = LocalCapture.CAPTURE_FAILHARD
-    )
-    private void setupChunk(
-            Camera camera, Frustum frustum, boolean hasForcedFrustum, int frame, boolean spectator, CallbackInfo ci,
-            Vec3d cameraPos, BlockPos cameraBlockPos,
-            Set<ChunkBuilder.BuiltChunk> chunksToRebuild, ObjectListIterator<WorldRenderer.ChunkInfo> chunkIterator,
-            WorldRenderer.ChunkInfo chunkInfo, ChunkBuilder.BuiltChunk builtChunk
-    ) {
-        this.chunkLightColorUpdater.updateChunk(this.world, builtChunk);
-    }
-
-    @Inject(
-            method = "updateChunks",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk;cancelRebuild()V"),
-            locals = LocalCapture.CAPTURE_FAILHARD
-    )
-    private void updateChunk(
-            long limitTime, CallbackInfo ci,
-            long startTime, int count, Iterator<ChunkBuilder.BuiltChunk> chunkIterator, ChunkBuilder.BuiltChunk chunk
-    ) {
-        this.chunkLightColorUpdater.updateChunk(this.world, chunk);
     }
 
     @Inject(method = "renderLayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderLayer;startDrawing()V", shift = At.Shift.AFTER))
@@ -169,5 +139,10 @@ public class WorldRendererMixin implements ColoredLightReader {
             float localZ = (float) (z - origin.getZ()) / 16.0F;
             ColoredLightCorner.mix(corners, localX, localY, localZ, consumer);
         }
+    }
+
+    @Override
+    public ChunkLightColorUpdater getChunkLightColorUpdater() {
+        return this.chunkLightColorUpdater;
     }
 }

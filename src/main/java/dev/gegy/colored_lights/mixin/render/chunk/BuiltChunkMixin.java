@@ -3,6 +3,8 @@ package dev.gegy.colored_lights.mixin.render.chunk;
 import dev.gegy.colored_lights.ColoredLightCorner;
 import dev.gegy.colored_lights.ColoredLightPacking;
 import dev.gegy.colored_lights.render.ColoredLightBuiltChunk;
+import dev.gegy.colored_lights.render.ColoredLightWorldRenderer;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,6 +21,15 @@ public class BuiltChunkMixin implements ColoredLightBuiltChunk {
     @Inject(method = "clear", at = @At("HEAD"))
     private void clear(CallbackInfo ci) {
         this.updateChunkLight(-1, null);
+    }
+
+    @Inject(method = "cancelRebuild", at = @At("HEAD"))
+    private void cancelRebuild(CallbackInfo ci) {
+        var client = MinecraftClient.getInstance();
+        var worldRenderer = (ColoredLightWorldRenderer) client.worldRenderer;
+        var colorUpdater = worldRenderer.getChunkLightColorUpdater();
+
+        colorUpdater.updateChunk(client.world, (ChunkBuilder.BuiltChunk) (Object) this);
     }
 
     @Override
