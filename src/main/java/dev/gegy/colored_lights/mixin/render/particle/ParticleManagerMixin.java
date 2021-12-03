@@ -46,7 +46,6 @@ public class ParticleManagerMixin {
             Tessellator tessellator, BufferBuilder bufferBuilder
     ) {
 
-
         //Not entirely sure if this is correct or not, let me know if there is any issues with this change
         float skyLight = this.world.method_23787(tickDelta);
         this.coloredParticleVertexConsumer.setup(bufferBuilder, skyLight);

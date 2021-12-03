@@ -10,6 +10,17 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
+tasks.withType(JavaCompile).configureEach {
+	// ensure that the encoding is set to UTF-8, no matter what the system default is
+	// this fixes some edge cases with special characters not displaying correctly
+	// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+	// If Javadoc is generated, this must be specified in that task too.
+	it.options.encoding = "UTF-8"
+
+	// Minecraft 1.18 (pre2) upwards uses Java 17.
+	it.options.release = 17
+}
+
 loom {
 	accessWidenerPath = file("src/main/resources/colored_lights.accesswidener")
 }
@@ -25,7 +36,7 @@ dependencies {
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-	modRuntime ("supercoder79:databreaker:0.2.7") {
+	modRuntimeOnly ("supercoder79:databreaker:0.2.7") {
 		exclude module : "fabric-loader"
 	}
 }
