@@ -45,7 +45,8 @@ public class ParticleManagerMixin {
             Iterator<ParticleTextureSheet> sheetIterator, ParticleTextureSheet sheet, Iterable<Particle> particles,
             Tessellator tessellator, BufferBuilder bufferBuilder
     ) {
-        float skyLight = this.world.method_23783(tickDelta);
+
+        float skyLight = this.world.getStarBrightness(tickDelta);
         this.coloredParticleVertexConsumer.setup(bufferBuilder, skyLight);
     }
 

@@ -21,8 +21,6 @@ import java.util.function.BiConsumer;
 public final class BlockLightColorLoader implements SimpleResourceReloadListener<BlockLightColors> {
     public static final BlockLightColorLoader INSTANCE = new BlockLightColorLoader();
 
-    private static final JsonParser JSON_PARSER = new JsonParser();
-
     private BlockLightColorLoader() {
     }
 
@@ -55,7 +53,7 @@ public final class BlockLightColorLoader implements SimpleResourceReloadListener
 
         for (var resource : manager.getAllResources(new Identifier(ColoredLights.ID, "light_colors.json"))) {
             try (var input = resource.getInputStream()) {
-                var root = JSON_PARSER.parse(new InputStreamReader(input)).getAsJsonObject();
+                var root = JsonParser.parseReader(new InputStreamReader(input)).getAsJsonObject();
 
                 boolean replace = JsonHelper.getBoolean(root, "replace", false);
                 var mappings = JsonHelper.getObject(root, "colors");
