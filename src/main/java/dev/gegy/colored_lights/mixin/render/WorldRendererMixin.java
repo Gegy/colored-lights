@@ -97,8 +97,9 @@ public class WorldRendererMixin implements ColoredLightWorldRenderer, ColoredLig
     }
 
     @Inject(method = "render", at = @At("INVOKE"))
-    private void beforeRender(MatrixStack transform, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmap, Matrix4f projection, CallbackInfo ci) {
-        float skyBrightness = this.world.method_23783(tickDelta);
+    private void beforeRender(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f positionMatrix, CallbackInfo ci) {
+        //Not entirely sure if this is correct or not, let me know if there is any issues with this change
+        float skyBrightness = this.world.method_23787(tickDelta);
         ColoredLightEntityRenderContext.setGlobal(skyBrightness);
     }
 

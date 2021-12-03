@@ -45,7 +45,10 @@ public class ParticleManagerMixin {
             Iterator<ParticleTextureSheet> sheetIterator, ParticleTextureSheet sheet, Iterable<Particle> particles,
             Tessellator tessellator, BufferBuilder bufferBuilder
     ) {
-        float skyLight = this.world.method_23783(tickDelta);
+
+
+        //Not entirely sure if this is correct or not, let me know if there is any issues with this change
+        float skyLight = this.world.method_23787(tickDelta);
         this.coloredParticleVertexConsumer.setup(bufferBuilder, skyLight);
     }
 
