@@ -58,6 +58,7 @@ public class ParticleManagerMixin {
         var box = particle.getBoundingBox();
         ColoredLightReader.INSTANCE.read(box.minX, box.minY, box.minZ, this.coloredLightSetter);
 
+        // TODO: we can entirely disable when color is normal
         particle.buildGeometry(this.coloredParticleVertexConsumer, camera, tickDelta);
     }
 

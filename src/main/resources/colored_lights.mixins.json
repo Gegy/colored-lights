@@ -6,8 +6,6 @@
   "mixins": [],
   "client": [
     "chunk.ChunkSectionMixin",
-    "render.ProgramMixin",
-    "render.ShaderMixin",
     "render.WorldRendererMixin",
     "render.chunk.BuiltChunkMixin",
     "render.chunk.BuiltChunkStorageAccess",
@@ -15,7 +13,9 @@
     "render.entity.BlockModelRendererMixin",
     "render.entity.ItemRendererMixin",
     "render.entity.ModelPartMixin",
-    "render.particle.ParticleManagerMixin"
+    "render.particle.ParticleManagerMixin",
+    "resource.ResourceImplMixin",
+    "shader.ShaderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

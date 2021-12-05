@@ -1,8 +1,8 @@
-package dev.gegy.colored_lights.mixin.render;
+package dev.gegy.colored_lights.mixin.shader;
 
-import dev.gegy.colored_lights.render.shader.PatchedShader;
-import dev.gegy.colored_lights.render.shader.PatchedUniform;
-import dev.gegy.colored_lights.render.shader.ShaderPatchManager;
+import dev.gegy.colored_lights.resource.shader.PatchedShader;
+import dev.gegy.colored_lights.resource.shader.PatchedUniform;
+import dev.gegy.colored_lights.resource.shader.ShaderPatchManager;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.render.Shader;

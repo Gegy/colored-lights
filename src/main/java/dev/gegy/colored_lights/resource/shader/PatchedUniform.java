@@ -1,4 +1,4 @@
-package dev.gegy.colored_lights.render.shader;
+package dev.gegy.colored_lights.resource.shader;
 
 import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;

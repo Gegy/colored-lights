@@ -1,8 +1,8 @@
 package dev.gegy.colored_lights;
 
-import dev.gegy.colored_lights.render.shader.PatchedUniform;
-import dev.gegy.colored_lights.render.shader.ShaderPatch;
-import dev.gegy.colored_lights.render.shader.ShaderPatchManager;
+import dev.gegy.colored_lights.resource.shader.PatchedUniform;
+import dev.gegy.colored_lights.resource.shader.ShaderPatch;
+import dev.gegy.colored_lights.resource.shader.ShaderPatchManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;

@@ -1,4 +1,4 @@
-package dev.gegy.colored_lights.render.shader;
+package dev.gegy.colored_lights.resource.shader;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.client.gl.GlShader;
