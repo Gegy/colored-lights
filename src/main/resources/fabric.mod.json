@@ -13,10 +13,10 @@
   "mixins": ["colored_lights.mixins.json"],
   "accessWidener": "colored_lights.accesswidener",
   "depends": {
-    "fabricloader": ">=0.11",
-    "fabric": ">=0.34",
-    "minecraft": "1.17.x",
-    "java": ">=16"
+    "fabricloader": ">=0.12",
+    "fabric": "*",
+    "minecraft": "1.18.x",
+    "java": ">=17"
   },
   "breaks": {
     "optifabric": "*"
