@@ -2,6 +2,7 @@
   "replace": true,
   "colors": {
     "redstone_torch": "#ff3333",
+    "redstone_wall_torch": "#ff3333",
 
     "lava": "#ff7033",
     "lava_cauldron": "#ff7033",

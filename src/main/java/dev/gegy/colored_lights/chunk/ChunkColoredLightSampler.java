@@ -1,6 +1,6 @@
 package dev.gegy.colored_lights.chunk;
 
-import dev.gegy.colored_lights.BlockLightColors;
+import dev.gegy.colored_lights.provider.BlockLightColors;
 import dev.gegy.colored_lights.ColoredLightValue;
 import net.minecraft.util.Util;
 import net.minecraft.world.chunk.ChunkSection;

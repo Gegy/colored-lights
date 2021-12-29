@@ -1,5 +1,6 @@
 package dev.gegy.colored_lights;
 
+import dev.gegy.colored_lights.provider.BlockLightColors;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 

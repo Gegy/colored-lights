@@ -1,5 +1,8 @@
 package dev.gegy.colored_lights;
 
+import dev.gegy.colored_lights.provider.BlockLightColorLoader;
+import dev.gegy.colored_lights.provider.BlockLightColorMap;
+import dev.gegy.colored_lights.provider.BlockLightColors;
 import dev.gegy.colored_lights.resource.shader.PatchedUniform;
 import dev.gegy.colored_lights.resource.shader.ShaderPatch;
 import dev.gegy.colored_lights.resource.shader.ShaderPatchManager;
@@ -17,7 +20,12 @@ public final class ColoredLights implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(BlockLightColorLoader.INSTANCE);
+        var resources = ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES);
+
+        var colors = new BlockLightColorMap();
+        BlockLightColors.registerProvider(colors);
+
+        resources.registerReloadListener(new BlockLightColorLoader(colors::set));
 
         // @formatter:off
         var chunkPatch = ShaderPatch.builder()

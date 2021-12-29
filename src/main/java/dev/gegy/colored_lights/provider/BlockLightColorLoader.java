@@ -1,44 +1,46 @@
-package dev.gegy.colored_lights;
+package dev.gegy.colored_lights.provider;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import dev.gegy.colored_lights.ColoredLights;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
-public final class BlockLightColorLoader implements SimpleResourceReloadListener<BlockLightColors> {
-    public static final BlockLightColorLoader INSTANCE = new BlockLightColorLoader();
+public final class BlockLightColorLoader implements SimpleResourceReloadListener<BlockLightColorMap> {
+    private final Consumer<BlockLightColorMap> colorConsumer;
 
-    private BlockLightColorLoader() {
+    public BlockLightColorLoader(Consumer<BlockLightColorMap> colorConsumer) {
+        this.colorConsumer = colorConsumer;
     }
 
     @Override
-    public CompletableFuture<BlockLightColors> load(ResourceManager manager, Profiler profiler, Executor executor) {
+    public CompletableFuture<BlockLightColorMap> load(ResourceManager manager, Profiler profiler, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return loadColors(manager);
             } catch (IOException e) {
                 ColoredLights.LOGGER.error("Failed to load colored light mappings", e);
-                return new BlockLightColors();
+                return new BlockLightColorMap();
             }
         }, executor);
     }
 
     @Override
-    public CompletableFuture<Void> apply(BlockLightColors colors, ResourceManager manager, Profiler profiler, Executor executor) {
-        BlockLightColors.instance = colors;
+    public CompletableFuture<Void> apply(BlockLightColorMap colors, ResourceManager manager, Profiler profiler, Executor executor) {
+        this.colorConsumer.accept(colors);
         return CompletableFuture.completedFuture(null);
     }
 
@@ -47,9 +49,9 @@ public final class BlockLightColorLoader implements SimpleResourceReloadListener
         return new Identifier(ColoredLights.ID, "light_colors");
     }
 
-    private static BlockLightColors loadColors(ResourceManager manager) throws IOException {
-        var baseColors = new BlockLightColors();
-        var overrideColors = new BlockLightColors();
+    private static BlockLightColorMap loadColors(ResourceManager manager) throws IOException {
+        var baseColors = new BlockLightColorMap();
+        var overrideColors = new BlockLightColorMap();
 
         for (var resource : manager.getAllResources(new Identifier(ColoredLights.ID, "light_colors.json"))) {
             try (var input = resource.getInputStream()) {
@@ -59,31 +61,25 @@ public final class BlockLightColorLoader implements SimpleResourceReloadListener
                 var mappings = JsonHelper.getObject(root, "colors");
 
                 if (replace) {
-                    baseColors = new BlockLightColors();
-                    parseColorMappings(mappings, baseColors::putColor);
+                    baseColors = new BlockLightColorMap();
+                    parseColorMappings(mappings, baseColors::put);
                 } else {
-                    parseColorMappings(mappings, overrideColors::putColor);
+                    parseColorMappings(mappings, overrideColors::put);
                 }
             } catch (JsonSyntaxException e) {
                 ColoredLights.LOGGER.error("Failed to parse colored light mappings at {}", resource.getId(), e);
             }
         }
 
-        baseColors.putAllColors(overrideColors);
+        baseColors.putAll(overrideColors);
 
         return baseColors;
     }
 
-    private static void parseColorMappings(JsonObject mappings, BiConsumer<Block, Vec3f> consumer) throws JsonSyntaxException {
+    private static void parseColorMappings(JsonObject mappings, BiConsumer<BlockState, Vec3f> consumer) throws JsonSyntaxException {
         for (var entry : mappings.entrySet()) {
-            var blockId = new Identifier(entry.getKey());
-            var block = Registry.BLOCK.getOrEmpty(blockId).orElse(null);
-            if (block == null) {
-                continue;
-            }
-
             var color = parseColor(JsonHelper.asString(entry.getValue(), "color value"));
-            consumer.accept(block, color);
+            BlockReferenceParser.parse(entry.getKey(), state -> consumer.accept(state, color));
         }
     }
 
