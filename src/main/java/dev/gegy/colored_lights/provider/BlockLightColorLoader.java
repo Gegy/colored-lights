@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import dev.gegy.colored_lights.ColoredLights;
 import net.fabricmc.fabric.api.resource.SimpleResourceReloadListener;
-import net.minecraft.block.BlockState;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public final class BlockLightColorLoader implements SimpleResourceReloadListener<BlockLightColorMap> {
@@ -62,9 +60,9 @@ public final class BlockLightColorLoader implements SimpleResourceReloadListener
 
                 if (replace) {
                     baseColors = new BlockLightColorMap();
-                    parseColorMappings(mappings, baseColors::put);
+                    parseColorMappings(mappings, baseColors);
                 } else {
-                    parseColorMappings(mappings, overrideColors::put);
+                    parseColorMappings(mappings, overrideColors);
                 }
             } catch (JsonSyntaxException e) {
                 ColoredLights.LOGGER.error("Failed to parse colored light mappings at {}", resource.getId(), e);
@@ -76,10 +74,14 @@ public final class BlockLightColorLoader implements SimpleResourceReloadListener
         return baseColors;
     }
 
-    private static void parseColorMappings(JsonObject mappings, BiConsumer<BlockState, Vec3f> consumer) throws JsonSyntaxException {
+    private static void parseColorMappings(JsonObject mappings, BlockLightColorMap colors) throws JsonSyntaxException {
         for (var entry : mappings.entrySet()) {
             var color = parseColor(JsonHelper.asString(entry.getValue(), "color value"));
-            BlockReferenceParser.parse(entry.getKey(), state -> consumer.accept(state, color));
+            var result = BlockReferenceParser.parse(entry.getKey());
+            if (result != null) {
+                result.ifLeft(block -> colors.put(block, color));
+                result.ifRight(state -> colors.put(state, color));
+            }
         }
     }
 

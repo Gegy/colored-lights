@@ -1,8 +1,11 @@
 package dev.gegy.colored_lights.chunk;
 
-import dev.gegy.colored_lights.provider.BlockLightColors;
 import dev.gegy.colored_lights.ColoredLightValue;
+import dev.gegy.colored_lights.provider.BlockLightColors;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.ChunkSection;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,12 +34,12 @@ public final class ChunkColoredLightSampler {
         return index(x, y, z, OCTANT_COUNT);
     }
 
-    public static ColoredLightValue[] sampleCorners(ChunkSection section) {
+    public static ColoredLightValue[] sampleCorners(WorldView world, ChunkSectionPos sectionPos, ChunkSection section) {
         // To properly weight lights, we would need to sample across the neighbor chunks and compute color per block
         // before summing all together. This is too expensive for our compromise solution, so instead we just sample
         // within this chunk at a lower resolution.
 
-        var samples = takeSamples(section);
+        var samples = takeSamples(world, sectionPos, section);
         if (samples == null) {
             return EMPTY;
         }
@@ -75,8 +78,11 @@ public final class ChunkColoredLightSampler {
     }
 
     @Nullable
-    private static ColoredLightValue[] takeSamples(ChunkSection section) {
+    private static ColoredLightValue[] takeSamples(WorldView world, ChunkSectionPos sectionPos, ChunkSection section) {
         ColoredLightValue[] samples = null;
+
+        var minPos = sectionPos.getMinPos();
+        var mutablePos = new BlockPos.Mutable();
 
         for (int y = 0; y < 16; y++) {
             for (int z = 0; z < 16; z++) {
@@ -88,7 +94,9 @@ public final class ChunkColoredLightSampler {
                             samples = new ColoredLightValue[SAMPLE_COUNT * SAMPLE_COUNT * SAMPLE_COUNT];
                         }
 
-                        var color = BlockLightColors.forBlock(state);
+                        mutablePos.set(minPos, x, y, z);
+
+                        var color = BlockLightColors.lookup(world, mutablePos, state);
                         addLightSourceSamples(samples, x, y, z, luminance, color.getX(), color.getY(), color.getZ());
                     }
                 }

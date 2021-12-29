@@ -4,6 +4,8 @@ import dev.gegy.colored_lights.ColoredLightValue;
 import dev.gegy.colored_lights.chunk.ChunkColoredLightSampler;
 import dev.gegy.colored_lights.chunk.ColoredLightChunkSection;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.ChunkSection;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -46,14 +48,14 @@ public abstract class ChunkSectionMixin implements ColoredLightChunkSection {
     }
 
     @Override
-    public ColoredLightValue getColoredLightPoint(int x, int y, int z) {
+    public ColoredLightValue getColoredLightPoint(WorldView world, ChunkSectionPos sectionPos, int x, int y, int z) {
         if (this.isEmpty()) {
             return ColoredLightValue.NO;
         }
 
         var points = this.coloredLightPoints;
         if (points == null) {
-            this.coloredLightPoints = points = ChunkColoredLightSampler.sampleCorners((ChunkSection) (Object) this);
+            this.coloredLightPoints = points = ChunkColoredLightSampler.sampleCorners(world, sectionPos, (ChunkSection) (Object) this);
         }
 
         return points[ChunkColoredLightSampler.octantIndex(x, y, z)];

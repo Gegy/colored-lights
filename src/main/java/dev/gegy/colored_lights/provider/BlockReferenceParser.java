@@ -1,6 +1,7 @@
 package dev.gegy.colored_lights.provider;
 
 import com.google.gson.JsonSyntaxException;
+import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,18 +11,21 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
 public final class BlockReferenceParser {
-    public static void parse(String reference, Consumer<BlockState> consumer) {
+    @Nullable
+    public static Either<Block, BlockState> parse(String reference) {
         if (reference.indexOf('[') != -1) {
-            parseBlockState(reference, consumer);
+            var state = parseBlockState(reference);
+            return state != null ? Either.right(state) : null;
         } else {
-            parseBlock(reference, consumer);
+            var block = parseBlock(reference);
+            return block != null ? Either.left(block) : null;
         }
     }
 
-    private static void parseBlockState(String reference, Consumer<BlockState> consumer) {
+    @Nullable
+    private static BlockState parseBlockState(String reference) {
         int propertiesIndex = reference.indexOf('[');
         if (propertiesIndex == -1 || !reference.endsWith("]")) {
             throw new JsonSyntaxException("Malformed block state reference: " + reference);
@@ -32,8 +36,9 @@ public final class BlockReferenceParser {
 
         var block = parseBlock(blockReference);
         if (block != null) {
-            var state = parseBlockStateProperties(blockReference, propertiesReference, block);
-            consumer.accept(state);
+            return parseBlockStateProperties(blockReference, propertiesReference, block);
+        } else {
+            return null;
         }
     }
 
@@ -77,13 +82,6 @@ public final class BlockReferenceParser {
         }
 
         return properties;
-    }
-
-    private static void parseBlock(String reference, Consumer<BlockState> consumer) {
-        var block = parseBlock(reference);
-        if (block != null) {
-            block.getStateManager().getStates().forEach(consumer);
-        }
     }
 
     @Nullable

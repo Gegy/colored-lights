@@ -7,6 +7,7 @@ import dev.gegy.colored_lights.mixin.render.chunk.BuiltChunkStorageAccess;
 import net.minecraft.client.render.BuiltChunkStorage;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.Nullable;
@@ -92,11 +93,14 @@ public final class ChunkLightColorUpdater {
 
         for (int dz = 0; dz <= 1; dz++) {
             for (int dx = 0; dx <= 1; dx++) {
-                Chunk chunk = world.getChunk(cx - dx, cz - dz);
+                var chunk = world.getChunk(cx - dx, cz - dz);
+                var chunkPos = chunk.getPos();
                 for (int dy = 0; dy <= 1; dy++) {
-                    var section = getChunkSection(chunk, cy - dy);
+                    int sy = cy - dy;
+                    var section = getChunkSection(chunk, sy);
                     if (section != null) {
-                        color.add(section.getColoredLightPoint(dx, dy, dz));
+                        var sectionPos = ChunkSectionPos.from(chunkPos, sy);
+                        color.add(section.getColoredLightPoint(world, sectionPos, dx, dy, dz));
                     }
                 }
             }
